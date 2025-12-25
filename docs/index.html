@@ -323,9 +323,13 @@
     }
 
     .bibo-play-icon {
-      font-size: 0.9rem;
+      font-size: 1.2rem;
       color: var(--cyan);
       transition: all 0.3s;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .bibo-core:hover .bibo-play-icon {
@@ -333,7 +337,7 @@
     }
 
     .bibo-core.playing .bibo-play-icon {
-      color: var(--gold);
+      display: none;
     }
 
     /* Sound Wave Rings */
@@ -376,22 +380,17 @@
       }
     }
 
-    /* Audio Bars - inside bibo-core */
+    /* Audio Bars - inside bibo-core, same position as play icon */
     .audio-bars {
-      display: flex;
+      display: none;
       gap: 3px;
-      height: 16px;
+      height: 20px;
       align-items: flex-end;
-      opacity: 0;
-      transition: opacity 0.3s;
+      justify-content: center;
     }
 
     .bibo-core.playing .audio-bars {
-      opacity: 1;
-    }
-
-    .bibo-core.playing .bibo-play-icon {
-      display: none;
+      display: flex;
     }
 
     .audio-bar {
