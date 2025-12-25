@@ -85,6 +85,49 @@
       color: var(--success);
     }
 
+    /* Hero Audio Player */
+    .hero-audio {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .play-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      border: none;
+      border-radius: 50px;
+      color: #000;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .play-btn:active {
+      transform: scale(0.98);
+    }
+
+    .play-btn.playing {
+      background: linear-gradient(135deg, #a855f7, var(--accent));
+    }
+
+    .hero-audio-label {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
     /* Install Section */
     .install-section {
       background: var(--bg-card);
@@ -111,9 +154,17 @@
       overflow-x: auto;
       position: relative;
       margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .code-block::before {
+    .code-block .code-content {
+      display: flex;
+      align-items: center;
+    }
+
+    .code-block .code-content::before {
       content: '$';
       color: var(--accent);
       margin-right: 12px;
@@ -127,6 +178,36 @@
       font-size: 0.85rem;
       color: var(--text-dim);
       margin-top: 12px;
+    }
+
+    /* Mini Play Button */
+    .play-mini {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0, 212, 255, 0.15);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .play-mini:hover {
+      background: rgba(0, 212, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .play-mini:active {
+      transform: scale(0.95);
+    }
+
+    .play-mini.playing {
+      background: var(--accent);
+      color: #000;
     }
 
     /* Features Grid */
@@ -214,7 +295,7 @@
 
     .voice-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 12px;
     }
 
@@ -222,11 +303,12 @@
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 12px 16px;
+      padding: 16px;
       text-align: center;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.9rem;
       transition: border-color 0.2s;
+      position: relative;
     }
 
     .voice-tag:hover {
@@ -237,6 +319,31 @@
       font-size: 0.75rem;
       color: var(--text-dim);
       margin-top: 4px;
+    }
+
+    .voice-tag .voice-play {
+      margin-top: 12px;
+    }
+
+    .voice-tag .voice-play button {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 212, 255, 0.15);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .voice-tag .voice-play button:hover {
+      background: rgba(0, 212, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .voice-tag .voice-play button.playing {
+      background: var(--accent);
+      color: #000;
     }
 
     /* Requirements */
@@ -319,11 +426,22 @@
       <h1>Bibo</h1>
       <p class="tagline">Fast, local neural text-to-speech. No cloud. No latency. Just speak.</p>
       <span class="badge">100% Local • Open Source</span>
+
+      <div class="hero-audio">
+        <button class="play-btn" onclick="playAudio('hero-amy', this)">
+          <span class="play-icon">▶</span>
+          <span>Listen to Bibo</span>
+        </button>
+        <p class="hero-audio-label">Click to hear a sample</p>
+        <audio id="hero-amy" src="audio/hero-amy.wav" preload="none"></audio>
+      </div>
     </header>
 
     <section class="install-section">
       <h2>$ Quick Install</h2>
-      <div class="code-block"><code>brew install larrykoo711/tap/bibo</code></div>
+      <div class="code-block">
+        <div class="code-content"><code>brew install larrykoo711/tap/bibo</code></div>
+      </div>
       <p class="code-alt">Or download from <a href="https://github.com/larrykoo711/bibo/releases" style="color: var(--accent)">GitHub Releases</a></p>
     </section>
 
@@ -340,7 +458,7 @@
       </div>
       <div class="feature-card">
         <div class="feature-icon">🎭</div>
-        <h3>12 Neural Voices</h3>
+        <h3>Neural Voices</h3>
         <p>High-quality voices in multiple languages. Natural, expressive speech synthesis.</p>
       </div>
       <div class="feature-card">
@@ -354,54 +472,105 @@
       <h2>$ Examples</h2>
       <ul class="demo-list">
         <li>
-          <div class="code-block"><code>bibo "Hello, world!"</code></div>
-          <p class="desc">Speak text with default voice</p>
+          <div class="code-block">
+            <div class="code-content"><code>bibo "The quick brown fox jumps over the lazy dog."</code></div>
+            <button class="play-mini" onclick="playAudio('example-amy', this)" title="Play">▶</button>
+          </div>
+          <p class="desc">Speak text with default voice (Amy)</p>
+          <audio id="example-amy" src="audio/example-amy.wav" preload="none"></audio>
         </li>
         <li>
-          <div class="code-block"><code>bibo -l</code></div>
+          <div class="code-block">
+            <div class="code-content"><code>bibo "Welcome to Bibo." -v ryan</code></div>
+            <button class="play-mini" onclick="playAudio('example-ryan', this)" title="Play">▶</button>
+          </div>
+          <p class="desc">Use a different voice (Ryan - male)</p>
+          <audio id="example-ryan" src="audio/example-ryan.wav" preload="none"></audio>
+        </li>
+        <li>
+          <div class="code-block">
+            <div class="code-content"><code>bibo -l</code></div>
+          </div>
           <p class="desc">List available voices</p>
         </li>
         <li>
-          <div class="code-block"><code>bibo -d amy</code></div>
+          <div class="code-block">
+            <div class="code-content"><code>bibo -d amy</code></div>
+          </div>
           <p class="desc">Download a voice model</p>
         </li>
         <li>
-          <div class="code-block"><code>bibo "Welcome" -v amy -o welcome.wav</code></div>
+          <div class="code-block">
+            <div class="code-content"><code>bibo "Welcome" -o welcome.wav</code></div>
+          </div>
           <p class="desc">Save speech to file</p>
         </li>
         <li>
-          <div class="code-block"><code>cat article.txt | bibo</code></div>
+          <div class="code-block">
+            <div class="code-content"><code>cat article.txt | bibo</code></div>
+          </div>
           <p class="desc">Read from stdin</p>
-        </li>
-        <li>
-          <div class="code-block"><code>bibo -f "Quick announcement" -v danny</code></div>
-          <p class="desc">Fast mode (1.2x speed)</p>
         </li>
       </ul>
     </section>
 
     <section class="voices-section">
-      <h2>🎭 Available Voices</h2>
+      <h2>🎭 Voice Samples</h2>
       <div class="voice-grid">
-        <div class="voice-tag">amy<div class="lang">English US</div></div>
-        <div class="voice-tag">danny<div class="lang">English US</div></div>
-        <div class="voice-tag">joe<div class="lang">English US</div></div>
-        <div class="voice-tag">kathleen<div class="lang">English US</div></div>
-        <div class="voice-tag">alan<div class="lang">English GB</div></div>
-        <div class="voice-tag">alba<div class="lang">English GB</div></div>
-        <div class="voice-tag">eva<div class="lang">Spanish ES</div></div>
-        <div class="voice-tag">camille<div class="lang">French FR</div></div>
-        <div class="voice-tag">thorsten<div class="lang">German DE</div></div>
-        <div class="voice-tag">riccardo<div class="lang">Italian IT</div></div>
-        <div class="voice-tag">irina<div class="lang">Russian RU</div></div>
-        <div class="voice-tag">dmitri<div class="lang">Russian RU</div></div>
+        <div class="voice-tag">
+          amy
+          <div class="lang">English US • Female</div>
+          <div class="voice-play">
+            <button onclick="playAudio('example-amy', this)" title="Play">▶</button>
+          </div>
+        </div>
+        <div class="voice-tag">
+          ryan
+          <div class="lang">English US • Male</div>
+          <div class="voice-play">
+            <button onclick="playAudio('example-ryan', this)" title="Play">▶</button>
+          </div>
+        </div>
+        <div class="voice-tag">
+          huayan
+          <div class="lang">中文 • 女声</div>
+          <div class="voice-play">
+            <button onclick="playAudio('example-huayan', this)" title="Play">▶</button>
+          </div>
+          <audio id="example-huayan" src="audio/example-huayan.wav" preload="none"></audio>
+        </div>
+        <div class="voice-tag">
+          irina
+          <div class="lang">Русский • Жен.</div>
+          <div class="voice-play">
+            <button onclick="playAudio('example-irina', this)" title="Play">▶</button>
+          </div>
+          <audio id="example-irina" src="audio/example-irina.wav" preload="none"></audio>
+        </div>
+        <div class="voice-tag">
+          eva
+          <div class="lang">Español • Fem.</div>
+          <div class="voice-play" style="opacity: 0.3">
+            <button disabled title="Coming soon">▶</button>
+          </div>
+        </div>
+        <div class="voice-tag">
+          camille
+          <div class="lang">Français • Fem.</div>
+          <div class="voice-play" style="opacity: 0.3">
+            <button disabled title="Coming soon">▶</button>
+          </div>
+        </div>
       </div>
+      <p style="text-align: center; margin-top: 24px; color: var(--text-dim); font-size: 0.85rem;">
+        + 6 more voices available • <a href="https://github.com/larrykoo711/bibo#available-voices" style="color: var(--accent)">View all</a>
+      </p>
     </section>
 
     <section class="requirements">
       <h2>📋 Requirements</h2>
       <ul class="req-list">
-        <li>macOS 12+ or Linux</li>
+        <li>macOS 12+ (ARM64)</li>
         <li>Python 3.10+</li>
         <li>~50MB per voice model</li>
         <li>Audio output device</li>
@@ -417,5 +586,47 @@
       <p class="footer-meta">MIT License • Built with Rust & Piper TTS</p>
     </footer>
   </div>
+
+  <script>
+    let currentAudio = null;
+    let currentButton = null;
+
+    function playAudio(id, btn) {
+      const audio = document.getElementById(id);
+
+      // Stop current audio if playing
+      if (currentAudio && currentAudio !== audio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        if (currentButton) {
+          currentButton.classList.remove('playing');
+          currentButton.innerHTML = '▶';
+        }
+      }
+
+      if (audio.paused) {
+        audio.play();
+        btn.classList.add('playing');
+        btn.innerHTML = '⏸';
+        currentAudio = audio;
+        currentButton = btn;
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+        btn.classList.remove('playing');
+        btn.innerHTML = '▶';
+        currentAudio = null;
+        currentButton = null;
+      }
+
+      // Reset button when audio ends
+      audio.onended = () => {
+        btn.classList.remove('playing');
+        btn.innerHTML = '▶';
+        currentAudio = null;
+        currentButton = null;
+      };
+    }
+  </script>
 </body>
 </html>
