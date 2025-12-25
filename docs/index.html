@@ -258,63 +258,164 @@
       background: rgba(0, 0, 0, 0.6);
       border: 1px solid var(--cyan);
       box-shadow: 0 0 20px rgba(0, 255, 213, 0.15);
+      white-space: nowrap;
     }
 
     .hero-code code {
       color: var(--cyan);
+      white-space: nowrap;
     }
 
-    /* Audio Hero */
-    .hero-audio {
-      margin-top: 40px;
-    }
-
-    .play-hero {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 32px;
-      background: linear-gradient(135deg, var(--cyan), var(--purple));
-      border: none;
-      border-radius: 50px;
-      color: #000;
-      font-family: 'Space Mono', monospace;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s;
+    /* Bibo Hero Player - Fusion Design */
+    .bibo-player {
       position: relative;
-      overflow: hidden;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 24px;
+      cursor: pointer;
     }
 
-    .play-hero::before {
-      content: '';
+    .bibo-core {
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      transition: left 0.5s;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--bg-card), var(--bg));
+      border: 2px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: all 0.3s;
+      box-shadow: 0 0 30px rgba(0, 255, 213, 0.2);
     }
 
-    .play-hero:hover::before {
-      left: 100%;
+    .bibo-core:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+      box-shadow: 0 0 50px rgba(0, 255, 213, 0.4);
+      border-color: var(--gold);
     }
 
-    .play-hero:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px rgba(0, 255, 213, 0.5);
+    .bibo-core.playing {
+      border-color: var(--gold);
+      animation: pulse-glow 1s ease-in-out infinite;
     }
 
-    .play-hero.playing {
-      background: linear-gradient(135deg, var(--purple), var(--cyan));
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 30px rgba(255, 214, 10, 0.3); }
+      50% { box-shadow: 0 0 60px rgba(255, 214, 10, 0.6); }
+    }
+
+    .bibo-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+    }
+
+    .bibo-play-icon {
+      position: absolute;
+      bottom: 8px;
+      font-size: 0.9rem;
+      color: var(--cyan);
+      transition: all 0.3s;
+    }
+
+    .bibo-core:hover .bibo-play-icon {
+      color: var(--gold);
+    }
+
+    .bibo-core.playing .bibo-play-icon {
+      color: var(--gold);
+    }
+
+    /* Sound Wave Rings */
+    .wave-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1px solid var(--cyan);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .wave-ring-1 { width: 160px; height: 160px; }
+    .wave-ring-2 { width: 180px; height: 180px; }
+    .wave-ring-3 { width: 200px; height: 200px; }
+
+    .bibo-player.playing .wave-ring {
+      animation: wave-expand 1.5s ease-out infinite;
+    }
+
+    .bibo-player.playing .wave-ring-1 { animation-delay: 0s; }
+    .bibo-player.playing .wave-ring-2 { animation-delay: 0.3s; }
+    .bibo-player.playing .wave-ring-3 { animation-delay: 0.6s; }
+
+    @keyframes wave-expand {
+      0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.8;
+        border-color: var(--cyan);
+      }
+      50% {
+        border-color: var(--gold);
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.4);
+        opacity: 0;
+        border-color: var(--purple);
+      }
+    }
+
+    /* Audio Bars */
+    .audio-bars {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4px;
+      height: 20px;
+      align-items: flex-end;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .bibo-player.playing .audio-bars {
+      opacity: 1;
+    }
+
+    .audio-bar {
+      width: 4px;
+      background: linear-gradient(to top, var(--cyan), var(--purple));
+      border-radius: 2px;
+      animation: bar-dance 0.5s ease-in-out infinite;
+    }
+
+    .audio-bar:nth-child(1) { animation-delay: 0.0s; }
+    .audio-bar:nth-child(2) { animation-delay: 0.1s; }
+    .audio-bar:nth-child(3) { animation-delay: 0.2s; }
+    .audio-bar:nth-child(4) { animation-delay: 0.3s; }
+    .audio-bar:nth-child(5) { animation-delay: 0.4s; }
+
+    @keyframes bar-dance {
+      0%, 100% { height: 6px; }
+      50% { height: 20px; }
     }
 
     .audio-hint {
       font-size: 0.8rem;
       color: var(--dim);
-      margin-top: 12px;
+      margin-top: 40px;
     }
 
     body.zh .audio-hint {
@@ -815,8 +916,25 @@
 
   <div class="container">
     <header class="hero">
-      <div class="hero-icon">🎙️</div>
-      <h1>Bibo</h1>
+      <!-- Bibo Player - Fusion Design -->
+      <div class="bibo-player" onclick="playBiboHero(this)">
+        <div class="wave-ring wave-ring-1"></div>
+        <div class="wave-ring wave-ring-2"></div>
+        <div class="wave-ring wave-ring-3"></div>
+        <div class="bibo-core">
+          <span class="bibo-text">Bibo</span>
+          <span class="bibo-play-icon">▶</span>
+        </div>
+        <div class="audio-bars">
+          <div class="audio-bar"></div>
+          <div class="audio-bar"></div>
+          <div class="audio-bar"></div>
+          <div class="audio-bar"></div>
+          <div class="audio-bar"></div>
+        </div>
+        <audio id="hero-audio-en" src="audio/hero-amy.wav" preload="none"></audio>
+        <audio id="hero-audio-zh" src="audio/hero-huayan.wav" preload="none"></audio>
+      </div>
 
       <p class="hero-tagline" data-lang="en">Give Voice to Your <em>Claude</em></p>
       <p class="hero-tagline" data-lang="zh">让你的 <em>Claude</em> 开口说话</p>
@@ -839,17 +957,8 @@
         </div>
       </div>
 
-      <div class="hero-audio">
-        <button class="play-hero" onclick="playHeroAudio(this)">
-          <span>▶</span>
-          <span data-lang="en">HEAR CLAUDE SPEAK</span>
-          <span data-lang="zh">听听 Claude 的声音</span>
-        </button>
-        <p class="audio-hint" data-lang="en">This is what AI-assisted coding sounds like</p>
-        <p class="audio-hint" data-lang="zh">这就是 AI 编程的声音</p>
-        <audio id="hero-audio-en" src="audio/hero-amy.wav" preload="none"></audio>
-        <audio id="hero-audio-zh" src="audio/hero-huayan.wav" preload="none"></audio>
-      </div>
+      <p class="audio-hint" data-lang="en">Click Bibo to hear Claude speak</p>
+      <p class="audio-hint" data-lang="zh">点击 Bibo 听听 Claude 的声音</p>
     </header>
 
     <section class="story" data-lang="en">
@@ -945,14 +1054,20 @@
     </section>
 
     <section class="integration">
-      <h2 data-lang="en">// One-Click Claude Integration</h2>
-      <h2 data-lang="zh">// 一键集成 Claude</h2>
-      <p data-lang="en">Add this to your <code>~/.claude/CLAUDE.md</code> and let Claude speak:</p>
-      <p data-lang="zh">把这段加入你的 <code>~/.claude/CLAUDE.md</code>，让 Claude 开口：</p>
-      <div class="code-box" style="margin-top: 16px;">
-        <code style="color: var(--gold);">关键节点用 bibo 语音播报，风险提醒时幽默。</code>
+      <h2 data-lang="en">// Claude Code Integration</h2>
+      <h2 data-lang="zh">// Claude Code 集成</h2>
+      <p data-lang="en">Add this to <code>~/.claude/CLAUDE.md</code> — Claude will speak at key moments:</p>
+      <p data-lang="zh">将以下内容添加到 <code>~/.claude/CLAUDE.md</code>，Claude 将在关键时刻开口：</p>
+      <div class="code-box integration-code" style="margin-top: 16px;" data-lang="en">
+        <code style="color: var(--gold);">Use bibo for voice feedback: task done, build status, risk warnings. Keep it short and witty.</code>
         <button class="copy-btn" onclick="copyCode(this)">COPY</button>
       </div>
+      <div class="code-box integration-code" style="margin-top: 16px;" data-lang="zh">
+        <code style="color: var(--gold);">用 bibo 语音播报：任务完成、构建状态、风险提醒。简短有力，适当幽默。</code>
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+      </div>
+      <p class="integration-hint" data-lang="en">Then Claude says things like: <em>"Ship it. Tests green."</em> or <em>"Hold up. This looks risky."</em></p>
+      <p class="integration-hint" data-lang="zh">然后 Claude 会说：<em>"搞定了，测试全过。"</em> 或 <em>"等等，这看起来有风险。"</em></p>
     </section>
 
     <section class="examples">
@@ -1109,11 +1224,59 @@
     }
 
     function resetBtnText(btn) {
-      if (btn.classList.contains('play-hero')) {
+      if (btn.classList.contains('bibo-player')) {
+        btn.classList.remove('playing');
+        btn.querySelector('.bibo-core').classList.remove('playing');
+        btn.querySelector('.bibo-play-icon').textContent = '▶';
+      } else if (btn.classList.contains('play-hero')) {
         btn.querySelector('span').textContent = '▶';
       } else {
         btn.textContent = '▶';
       }
+    }
+
+    function playBiboHero(player) {
+      const audioId = currentLang === 'zh' ? 'hero-audio-zh' : 'hero-audio-en';
+      const audio = document.getElementById(audioId);
+      const core = player.querySelector('.bibo-core');
+      const icon = player.querySelector('.bibo-play-icon');
+
+      if (!audio) return;
+
+      // Stop any other playing audio
+      if (currentAudio && currentAudio !== audio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        if (currentBtn) {
+          currentBtn.classList.remove('playing');
+          resetBtnText(currentBtn);
+        }
+      }
+
+      if (audio.paused) {
+        audio.play();
+        player.classList.add('playing');
+        core.classList.add('playing');
+        icon.textContent = '⏸';
+        currentAudio = audio;
+        currentBtn = player;
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+        player.classList.remove('playing');
+        core.classList.remove('playing');
+        icon.textContent = '▶';
+        currentAudio = null;
+        currentBtn = null;
+      }
+
+      audio.onended = () => {
+        player.classList.remove('playing');
+        core.classList.remove('playing');
+        icon.textContent = '▶';
+        currentAudio = null;
+        currentBtn = null;
+      };
     }
 
     function playHeroAudio(btn) {
