@@ -1337,9 +1337,13 @@
       });
     }
 
+    // Auto-detect language: saved preference > browser language > default 'en'
     const savedLang = localStorage.getItem('bibo-lang');
     if (savedLang) {
       setLang(savedLang);
+    } else {
+      const browserLang = navigator.language || navigator.userLanguage;
+      setLang(browserLang.startsWith('zh') ? 'zh' : 'en');
     }
   </script>
 </body>
