@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bibo - Your Local Voice</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Bibo - Give Voice to Your AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #0a0e17;
@@ -75,14 +75,12 @@
       font-weight: 700;
       color: var(--cyan);
       text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .nav-links {
       display: flex;
-      gap: 24px;
+      gap: 16px;
+      align-items: center;
     }
 
     .nav-links a {
@@ -111,6 +109,38 @@
       box-shadow: 0 0 20px rgba(0, 255, 213, 0.4);
     }
 
+    /* Language Switcher */
+    .lang-switch {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    .lang-switch button {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--dim);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-switch button.active {
+      background: var(--cyan);
+      color: #000;
+      font-weight: 700;
+    }
+
+    .lang-switch button:hover:not(.active) {
+      color: var(--text);
+    }
+
     /* Container */
     .container {
       max-width: 800px;
@@ -119,6 +149,16 @@
       position: relative;
       z-index: 1;
     }
+
+    /* i18n */
+    [data-lang] { display: none; }
+    [data-lang="en"] { display: block; }
+    body.zh [data-lang="en"] { display: none; }
+    body.zh [data-lang="zh"] { display: block; }
+    span[data-lang] { display: none; }
+    span[data-lang="en"] { display: inline; }
+    body.zh span[data-lang="en"] { display: none; }
+    body.zh span[data-lang="zh"] { display: inline; }
 
     /* Hero */
     .hero {
@@ -140,23 +180,40 @@
 
     .hero h1 {
       font-family: 'Space Mono', monospace;
-      font-size: 4rem;
+      font-size: 3.5rem;
       font-weight: 700;
       margin-bottom: 16px;
       background: linear-gradient(135deg, var(--cyan), var(--purple));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
       letter-spacing: -2px;
     }
 
     .hero-tagline {
-      font-size: 1.4rem;
-      color: var(--dim);
-      margin-bottom: 32px;
-      font-weight: 400;
+      font-size: 1.5rem;
+      color: var(--text);
+      margin-bottom: 12px;
+      font-weight: 500;
     }
 
-    .hero-tagline em {
+    body.zh .hero-tagline {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--dim);
+      margin-bottom: 32px;
+    }
+
+    body.zh .hero-sub {
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    .hero-tagline em, .hero-sub em {
       color: var(--gold);
       font-style: normal;
     }
@@ -238,6 +295,10 @@
       margin-top: 12px;
     }
 
+    body.zh .audio-hint {
+      font-family: 'Noto Serif SC', serif;
+    }
+
     /* Story Section */
     .story {
       background: var(--bg-card);
@@ -261,10 +322,16 @@
 
     .story p {
       font-size: 1.1rem;
-      line-height: 1.8;
+      line-height: 1.9;
       color: var(--text);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       padding-left: 20px;
+    }
+
+    body.zh .story p {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.15rem;
+      line-height: 2.1;
     }
 
     .story p:last-child {
@@ -273,11 +340,26 @@
 
     .story strong {
       color: var(--cyan);
+      font-weight: 600;
     }
 
     .story em {
       color: var(--gold);
       font-style: normal;
+    }
+
+    .story .highlight {
+      display: block;
+      font-size: 1.3rem;
+      margin: 24px 0;
+      padding: 16px 24px;
+      background: rgba(0, 255, 213, 0.08);
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 8px 8px 0;
+    }
+
+    body.zh .story .highlight {
+      font-size: 1.4rem;
     }
 
     /* Install */
@@ -338,6 +420,60 @@
 
     .install-alt a {
       color: var(--purple);
+    }
+
+    /* Use Cases */
+    .use-cases {
+      margin-bottom: 60px;
+    }
+
+    .use-cases h2 {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--text);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .case-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .case-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .case-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+    }
+
+    .case-icon {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+
+    .case-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--cyan);
+      margin-bottom: 8px;
+    }
+
+    .case-desc {
+      font-size: 0.85rem;
+      color: var(--dim);
+      line-height: 1.5;
+    }
+
+    body.zh .case-desc {
+      font-family: 'Noto Serif SC', serif;
     }
 
     /* Examples */
@@ -515,9 +651,49 @@
       cursor: not-allowed;
     }
 
+    /* Integration */
+    .integration {
+      background: linear-gradient(135deg, rgba(191, 90, 242, 0.1), rgba(0, 255, 213, 0.1));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 60px;
+      text-align: center;
+    }
+
+    .integration h2 {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .integration p {
+      font-size: 0.95rem;
+      color: var(--dim);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    body.zh .integration p {
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    .integration-code {
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--gold);
+      text-align: left;
+      overflow-x: auto;
+    }
+
     /* Requirements */
     .requirements {
-      background: linear-gradient(135deg, rgba(0, 255, 213, 0.05), rgba(191, 90, 242, 0.05));
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 32px;
@@ -546,38 +722,9 @@
     }
 
     .req-item::before {
-      content: '✓';
+      content: '>';
       color: var(--cyan);
-      font-weight: bold;
-    }
-
-    /* Warning */
-    .warning-box {
-      background: rgba(255, 214, 10, 0.05);
-      border: 1px solid rgba(255, 214, 10, 0.2);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 60px;
-      display: flex;
-      gap: 16px;
-    }
-
-    .warning-icon {
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .warning-content h3 {
       font-family: 'Space Mono', monospace;
-      font-size: 0.9rem;
-      color: var(--gold);
-      margin-bottom: 8px;
-    }
-
-    .warning-content p {
-      font-size: 0.85rem;
-      color: var(--dim);
-      line-height: 1.6;
     }
 
     /* Footer */
@@ -619,9 +766,11 @@
     /* Responsive */
     @media (max-width: 640px) {
       .hero h1 { font-size: 2.5rem; }
-      .nav-links { gap: 12px; }
-      .nav-links a { padding: 6px 12px; font-size: 0.75rem; }
+      .nav-links { gap: 8px; }
+      .nav-links a { padding: 6px 10px; font-size: 0.75rem; }
+      .nav-links a:not(.primary):not(:has(.lang-switch)) { display: none; }
       .req-grid { grid-template-columns: 1fr; }
+      .case-grid { grid-template-columns: 1fr; }
       .story { padding: 24px; }
     }
   </style>
@@ -630,12 +779,15 @@
   <div class="stars"></div>
 
   <nav>
-    <a href="#" class="nav-brand">🎙️ Bibo</a>
+    <a href="#" class="nav-brand">Bibo</a>
     <div class="nav-links">
+      <div class="lang-switch">
+        <button class="active" onclick="setLang('en')">EN</button>
+        <button onclick="setLang('zh')">ZH</button>
+      </div>
       <a href="https://github.com/larrykoo711/bibo">GitHub</a>
       <a href="https://github.com/larrykoo711/bibo/releases">Releases</a>
-      <a href="https://github.com/larrykoo711/bibo/issues">Issues</a>
-      <a href="https://github.com/larrykoo711/bibo" class="primary">★ Star</a>
+      <a href="https://github.com/larrykoo711/bibo" class="primary">Star</a>
     </div>
   </nav>
 
@@ -643,50 +795,134 @@
     <header class="hero">
       <div class="hero-icon">🎙️</div>
       <h1>Bibo</h1>
-      <p class="hero-tagline">Your text. <em>Your voice.</em> Your machine.</p>
+
+      <p class="hero-tagline" data-lang="en">Give Voice to Your <em>Claude</em></p>
+      <p class="hero-tagline" data-lang="zh">让你的 <em>Claude</em> 开口说话</p>
+
+      <p class="hero-sub" data-lang="en">Your AI assistant finally speaks. <em>Locally.</em></p>
+      <p class="hero-sub" data-lang="zh">AI 编程助手，终于有了声音。<em>完全本地。</em></p>
 
       <div class="badge-row">
+        <span class="badge">CLAUDE / CURSOR</span>
         <span class="badge">100% LOCAL</span>
         <span class="badge">NEURAL TTS</span>
-        <span class="badge">OPEN SOURCE</span>
-        <span class="badge warning">⚠ MOSTLY HARMLESS</span>
+        <span class="badge warning">OPEN SOURCE</span>
       </div>
 
       <div class="hero-audio">
-        <button class="play-hero" onclick="playAudio('hero-audio', this)">
+        <button class="play-hero" onclick="playHeroAudio(this)">
           <span>▶</span>
-          <span>HEAR BIBO SPEAK</span>
+          <span data-lang="en">HEAR CLAUDE SPEAK</span>
+          <span data-lang="zh">听听 Claude 的声音</span>
         </button>
-        <p class="audio-hint">Click to experience neural TTS magic</p>
-        <audio id="hero-audio" src="audio/hero-amy.wav" preload="none"></audio>
+        <p class="audio-hint" data-lang="en">This is what AI-assisted coding sounds like</p>
+        <p class="audio-hint" data-lang="zh">这就是 AI 编程的声音</p>
+        <audio id="hero-audio-en" src="audio/hero-amy.wav" preload="none"></audio>
+        <audio id="hero-audio-zh" src="audio/hero-huayan.wav" preload="none"></audio>
       </div>
     </header>
 
-    <section class="story">
+    <section class="story" data-lang="en">
       <p>
-        In the age of cloud everything, your words travel thousands of miles just to become sound.
-        They pass through servers, get logged, analyzed, maybe even <em>listened to</em>.
+        You code. Claude thinks. The conversation flows — but it stays <em>trapped in text</em>.
       </p>
       <p>
-        <strong>Bibo believes your voice should stay yours.</strong>
+        Every insight. Every warning. Every "task complete." Silent pixels on a screen.
+        You miss things. You context-switch. You lose <em>flow</em>.
+      </p>
+      <p class="highlight">
+        <strong>What if your AI could speak?</strong>
       </p>
       <p>
-        A tiny neural network lives on your machine. It reads your text. It speaks.
-        No internet required. No accounts. No subscriptions. No limits.
-        Just <em>you</em> and <em>your words</em>.
+        Bibo gives voice to your Claude. When builds fail — you <em>hear</em> it.
+        When tests pass — you <em>know</em>. When something needs your attention — it <em>tells</em> you.
+      </p>
+      <p>
+        No cloud. No latency. Your machine. Your voice. Your <strong>flow</strong>.
       </p>
     </section>
 
+    <section class="story" data-lang="zh">
+      <p>
+        你写代码。Claude 在思考。对话在流动——却始终<em>困在屏幕上</em>。
+      </p>
+      <p>
+        每一个洞见。每一个警告。每一个「任务完成」。都是沉默的像素。
+        你会错过。你会分心。你会失去<em>心流</em>。
+      </p>
+      <p class="highlight">
+        <strong>如果 AI 能开口说话呢？</strong>
+      </p>
+      <p>
+        Bibo 让你的 Claude 拥有声音。构建失败——你<em>听得到</em>。
+        测试通过——你<em>知道</em>。需要注意——它<em>告诉你</em>。
+      </p>
+      <p>
+        无需云端。零延迟。你的机器。你的声音。你的<strong>心流</strong>。
+      </p>
+    </section>
+
+    <section class="use-cases">
+      <h2 data-lang="en">// When Claude Speaks</h2>
+      <h2 data-lang="zh">// Claude 什么时候说话</h2>
+      <div class="case-grid">
+        <div class="case-card">
+          <div class="case-icon">🔨</div>
+          <div class="case-title" data-lang="en">Build Complete</div>
+          <div class="case-title" data-lang="zh">构建完成</div>
+          <div class="case-desc" data-lang="en">"Build passed. 42 tests green. Ship it."</div>
+          <div class="case-desc" data-lang="zh">「构建通过，42 个测试全绿。可以发布了。」</div>
+        </div>
+        <div class="case-card">
+          <div class="case-icon">⚠️</div>
+          <div class="case-title" data-lang="en">Risk Detected</div>
+          <div class="case-title" data-lang="zh">风险提醒</div>
+          <div class="case-desc" data-lang="en">"Hold up. This deletes 47 files. Confirm?"</div>
+          <div class="case-desc" data-lang="zh">「等等，这会删除 47 个文件。确认吗？」</div>
+        </div>
+        <div class="case-card">
+          <div class="case-icon">🐛</div>
+          <div class="case-title" data-lang="en">Error Found</div>
+          <div class="case-title" data-lang="zh">发现错误</div>
+          <div class="case-desc" data-lang="en">"Type error on line 42. Check it out."</div>
+          <div class="case-desc" data-lang="zh">「第 42 行类型错误，看一下。」</div>
+        </div>
+        <div class="case-card">
+          <div class="case-icon">✨</div>
+          <div class="case-title" data-lang="en">Task Done</div>
+          <div class="case-title" data-lang="zh">任务完成</div>
+          <div class="case-desc" data-lang="en">"Feature implemented. Ready for review."</div>
+          <div class="case-desc" data-lang="zh">「功能已实现，可以 review 了。」</div>
+        </div>
+      </div>
+    </section>
+
     <section class="install">
-      <h2>Quick Install</h2>
+      <h2 data-lang="en">Quick Install</h2>
+      <h2 data-lang="zh">快速安装</h2>
       <div class="code-box">
         <code>brew install larrykoo711/tap/bibo</code>
         <button class="copy-btn" onclick="copyCode(this)">COPY</button>
       </div>
-      <p class="install-alt">
+      <p class="install-alt" data-lang="en">
         Or grab from <a href="https://github.com/larrykoo711/bibo/releases">GitHub Releases</a>
         • Requires <a href="https://www.python.org/">Python 3.10+</a> with <code>pip install piper-tts</code>
       </p>
+      <p class="install-alt" data-lang="zh">
+        或从 <a href="https://github.com/larrykoo711/bibo/releases">GitHub Releases</a> 下载
+        • 需要 <a href="https://www.python.org/">Python 3.10+</a> 并执行 <code>pip install piper-tts</code>
+      </p>
+    </section>
+
+    <section class="integration">
+      <h2 data-lang="en">// One-Click Claude Integration</h2>
+      <h2 data-lang="zh">// 一键集成 Claude</h2>
+      <p data-lang="en">Add this to your <code>~/.claude/CLAUDE.md</code> and let Claude speak:</p>
+      <p data-lang="zh">把这段加入你的 <code>~/.claude/CLAUDE.md</code>，让 Claude 开口：</p>
+      <div class="code-box" style="margin-top: 16px;">
+        <code style="color: var(--gold);">关键节点用 bibo 语音播报，风险提醒时幽默。</code>
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+      </div>
     </section>
 
     <section class="examples">
@@ -695,45 +931,54 @@
         <li>
           <div class="example-content">
             <div class="example-code">
-              <span class="cmd">bibo "The quick brown fox jumps over the lazy dog."</span>
+              <span class="cmd">bibo "Ship it. All tests green. Let's go."</span>
               <button class="play-sm" onclick="playAudio('ex-amy', this)">▶</button>
             </div>
-            <p class="example-desc">Speak text instantly with neural voice</p>
+            <p class="example-desc" data-lang="en">Build passed. Ship it. Elon would approve.</p>
+            <p class="example-desc" data-lang="zh">构建通过。发布吧。马斯克风格。</p>
             <audio id="ex-amy" src="audio/example-amy.wav" preload="none"></audio>
           </div>
         </li>
         <li>
           <div class="example-content">
             <div class="example-code">
-              <span class="cmd">bibo "Welcome to Bibo." -v ryan</span>
+              <span class="cmd">bibo "Houston, we have a problem." -v ryan</span>
               <button class="play-sm" onclick="playAudio('ex-ryan', this)">▶</button>
             </div>
-            <p class="example-desc">Switch voices with -v flag</p>
+            <p class="example-desc" data-lang="en">Error detected. Apollo 13 vibes.</p>
+            <p class="example-desc" data-lang="zh">发现错误。阿波罗 13 号即视感。</p>
             <audio id="ex-ryan" src="audio/example-ryan.wav" preload="none"></audio>
           </div>
         </li>
         <li>
           <div class="example-content">
             <div class="example-code">
-              <span class="cmd">bibo -d amy</span>
+              <span class="cmd">bibo "搞定了。发布吧。" -v huayan</span>
+              <button class="play-sm" onclick="playAudio('ex-huayan', this)">▶</button>
             </div>
-            <p class="example-desc">Download voice models (~50MB each)</p>
+            <p class="example-desc" data-lang="en">Done. Ship it. In Chinese.</p>
+            <p class="example-desc" data-lang="zh">搞定了。发布吧。中文语音。</p>
+            <audio id="ex-huayan" src="audio/example-huayan.wav" preload="none"></audio>
           </div>
         </li>
         <li>
           <div class="example-content">
             <div class="example-code">
-              <span class="cmd">cat essay.txt | bibo -o reading.wav</span>
+              <span class="cmd">bibo -f "Move fast. Break things."</span>
             </div>
-            <p class="example-desc">Pipe text, save to file. Unix philosophy.</p>
+            <p class="example-desc" data-lang="en">Fast mode. 1.2x speed. Zuckerberg approved.</p>
+            <p class="example-desc" data-lang="zh">快速模式。1.2 倍速。扎克伯格同款。</p>
           </div>
         </li>
         <li>
           <div class="example-content">
             <div class="example-code">
-              <span class="cmd">bibo -f "Ship it!"</span>
+              <span class="cmd">bibo "The best code is no code."</span>
+              <button class="play-sm" onclick="playAudio('ex-nocode', this)">▶</button>
             </div>
-            <p class="example-desc">Fast mode. 1.2x speed. For the impatient.</p>
+            <p class="example-desc" data-lang="en">Refactoring wisdom. Less is more.</p>
+            <p class="example-desc" data-lang="zh">重构智慧。少即是多。</p>
+            <audio id="ex-nocode" src="audio/example-nocode.wav" preload="none"></audio>
           </div>
         </li>
       </ul>
@@ -756,7 +1001,6 @@
           <div class="voice-name">huayan</div>
           <div class="voice-lang">中文 • ♀</div>
           <button class="voice-play">▶</button>
-          <audio id="ex-huayan" src="audio/example-huayan.wav" preload="none"></audio>
         </div>
         <div class="voice-card has-audio" onclick="playAudio('ex-irina', this.querySelector('.voice-play'))">
           <div class="voice-name">irina</div>
@@ -776,30 +1020,21 @@
         </div>
       </div>
       <p style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--dim);">
-        + more voices • run <code style="color: var(--cyan);">bibo -l</code> to explore
+        <span data-lang="en">+ more voices • run <code style="color: var(--cyan);">bibo -l</code> to explore</span>
+        <span data-lang="zh">更多语音 • 运行 <code style="color: var(--cyan);">bibo -l</code> 探索</span>
       </p>
     </section>
 
-    <div class="warning-box">
-      <div class="warning-icon">⚠️</div>
-      <div class="warning-content">
-        <h3>MOSTLY HARMLESS</h3>
-        <p>
-          This is v0.1.0. The code is fresh. The edges are rough.
-          It works on my machine™. Probably works on yours too.
-          If not, <a href="https://github.com/larrykoo711/bibo/issues" style="color: var(--gold);">file an issue</a>.
-          We'll figure it out together.
-        </p>
-      </div>
-    </div>
-
     <section class="requirements">
-      <h2>// System Requirements</h2>
+      <h2 data-lang="en">// System Requirements</h2>
+      <h2 data-lang="zh">// 系统要求</h2>
       <div class="req-grid">
         <div class="req-item">macOS 12+ (Apple Silicon)</div>
         <div class="req-item">Python 3.10+</div>
-        <div class="req-item">~50MB per voice model</div>
-        <div class="req-item">Speakers or headphones</div>
+        <div class="req-item" data-lang="en">~50MB per voice model</div>
+        <div class="req-item" data-lang="zh">每个语音模型约 50MB</div>
+        <div class="req-item" data-lang="en">Speakers or headphones</div>
+        <div class="req-item" data-lang="zh">扬声器或耳机</div>
       </div>
     </section>
 
@@ -808,11 +1043,12 @@
         <a href="https://github.com/larrykoo711/bibo">GitHub</a>
         <a href="https://github.com/larrykoo711/bibo/releases">Downloads</a>
         <a href="https://github.com/larrykoo711/bibo/issues">Report Bug</a>
-        <a href="https://github.com/larrykoo711/bibo#readme">Documentation</a>
+        <a href="https://github.com/larrykoo711/bibo#readme">Docs</a>
       </div>
       <p class="footer-meta">
         MIT License • Built with Rust + <a href="https://github.com/rhasspy/piper">Piper TTS</a><br>
-        Made somewhere on Earth. Probably.
+        <span data-lang="en">Give voice to your AI. Ship faster.</span>
+        <span data-lang="zh">让 AI 开口，让开发更快。</span>
       </p>
     </footer>
   </div>
@@ -820,18 +1056,51 @@
   <script>
     let currentAudio = null;
     let currentBtn = null;
+    let currentLang = 'en';
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.body.classList.toggle('zh', lang === 'zh');
+      document.querySelectorAll('.lang-switch button').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+      });
+      localStorage.setItem('bibo-lang', lang);
+
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        if (currentBtn) {
+          currentBtn.classList.remove('playing');
+          resetBtnText(currentBtn);
+        }
+        currentAudio = null;
+        currentBtn = null;
+      }
+    }
+
+    function resetBtnText(btn) {
+      if (btn.classList.contains('play-hero')) {
+        btn.querySelector('span').textContent = '▶';
+      } else {
+        btn.textContent = '▶';
+      }
+    }
+
+    function playHeroAudio(btn) {
+      const audioId = currentLang === 'zh' ? 'hero-audio-zh' : 'hero-audio-en';
+      playAudio(audioId, btn);
+    }
 
     function playAudio(id, btn) {
       const audio = document.getElementById(id);
       if (!audio) return;
 
-      // Stop previous
       if (currentAudio && currentAudio !== audio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
         if (currentBtn) {
           currentBtn.classList.remove('playing');
-          currentBtn.innerHTML = '▶' + (currentBtn.classList.contains('play-hero') ? '<span>HEAR BIBO SPEAK</span>' : '');
+          resetBtnText(currentBtn);
         }
       }
 
@@ -839,9 +1108,9 @@
         audio.play();
         btn.classList.add('playing');
         if (btn.classList.contains('play-hero')) {
-          btn.innerHTML = '<span>⏸</span><span>PLAYING...</span>';
+          btn.querySelector('span').textContent = '⏸';
         } else {
-          btn.innerHTML = '⏸';
+          btn.textContent = '⏸';
         }
         currentAudio = audio;
         currentBtn = btn;
@@ -849,22 +1118,14 @@
         audio.pause();
         audio.currentTime = 0;
         btn.classList.remove('playing');
-        if (btn.classList.contains('play-hero')) {
-          btn.innerHTML = '<span>▶</span><span>HEAR BIBO SPEAK</span>';
-        } else {
-          btn.innerHTML = '▶';
-        }
+        resetBtnText(btn);
         currentAudio = null;
         currentBtn = null;
       }
 
       audio.onended = () => {
         btn.classList.remove('playing');
-        if (btn.classList.contains('play-hero')) {
-          btn.innerHTML = '<span>▶</span><span>HEAR BIBO SPEAK</span>';
-        } else {
-          btn.innerHTML = '▶';
-        }
+        resetBtnText(btn);
         currentAudio = null;
         currentBtn = null;
       };
@@ -882,6 +1143,11 @@
           btn.style.borderColor = '';
         }, 2000);
       });
+    }
+
+    const savedLang = localStorage.getItem('bibo-lang');
+    if (savedLang) {
+      setLang(savedLang);
     }
   </script>
 </body>
