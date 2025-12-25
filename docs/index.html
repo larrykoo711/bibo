@@ -286,8 +286,10 @@
       background: linear-gradient(135deg, var(--bg-card), var(--bg));
       border: 2px solid var(--cyan);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       z-index: 10;
       transition: all 0.3s;
       box-shadow: 0 0 30px rgba(0, 255, 213, 0.2);
@@ -321,8 +323,6 @@
     }
 
     .bibo-play-icon {
-      position: absolute;
-      bottom: 8px;
       font-size: 0.9rem;
       color: var(--cyan);
       transition: all 0.3s;
@@ -376,26 +376,26 @@
       }
     }
 
-    /* Audio Bars */
+    /* Audio Bars - inside bibo-core */
     .audio-bars {
-      position: absolute;
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
       display: flex;
-      gap: 4px;
-      height: 20px;
+      gap: 3px;
+      height: 16px;
       align-items: flex-end;
       opacity: 0;
       transition: opacity 0.3s;
     }
 
-    .bibo-player.playing .audio-bars {
+    .bibo-core.playing .audio-bars {
       opacity: 1;
     }
 
+    .bibo-core.playing .bibo-play-icon {
+      display: none;
+    }
+
     .audio-bar {
-      width: 4px;
+      width: 3px;
       background: linear-gradient(to top, var(--cyan), var(--purple));
       border-radius: 2px;
       animation: bar-dance 0.5s ease-in-out infinite;
@@ -408,8 +408,8 @@
     .audio-bar:nth-child(5) { animation-delay: 0.4s; }
 
     @keyframes bar-dance {
-      0%, 100% { height: 6px; }
-      50% { height: 20px; }
+      0%, 100% { height: 4px; }
+      50% { height: 16px; }
     }
 
     .audio-hint {
@@ -924,13 +924,13 @@
         <div class="bibo-core">
           <span class="bibo-text">Bibo</span>
           <span class="bibo-play-icon">▶</span>
-        </div>
-        <div class="audio-bars">
-          <div class="audio-bar"></div>
-          <div class="audio-bar"></div>
-          <div class="audio-bar"></div>
-          <div class="audio-bar"></div>
-          <div class="audio-bar"></div>
+          <div class="audio-bars">
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+          </div>
         </div>
         <audio id="hero-audio-en" src="audio/hero-amy.wav" preload="none"></audio>
         <audio id="hero-audio-zh" src="audio/hero-huayan.wav" preload="none"></audio>
