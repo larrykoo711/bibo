@@ -2,8 +2,21 @@
 
 > Fast, local neural text-to-speech CLI. No cloud. No latency. Just speak.
 
-[![CI](https://github.com/larrykoo711/bibo/actions/workflows/ci.yml/badge.svg)](https://github.com/larrykoo711/bibo/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+<p align="center">
+  <a href="https://larrykoo711.github.io/bibo">Website</a> •
+  <a href="https://github.com/larrykoo711/bibo/releases">Releases</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#quick-start">Quick Start</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/larrykoo711/bibo/actions/workflows/ci.yml"><img src="https://github.com/larrykoo711/bibo/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/larrykoo711/bibo/releases"><img src="https://img.shields.io/github/v/release/larrykoo711/bibo?color=green" alt="Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
+  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey" alt="Platform">
+</p>
+
+---
 
 Bibo is a blazing-fast, privacy-first TTS tool that runs entirely on your machine. Built with Rust for instant startup and powered by [Piper TTS](https://github.com/rhasspy/piper) neural voices.
 
@@ -16,10 +29,20 @@ Bibo is a blazing-fast, privacy-first TTS tool that runs entirely on your machin
 
 ## Installation
 
-### Homebrew (macOS/Linux)
+### Homebrew (macOS ARM64)
 
 ```bash
 brew install larrykoo711/tap/bibo
+```
+
+### From Releases
+
+Download the latest binary from [Releases](https://github.com/larrykoo711/bibo/releases):
+
+```bash
+# macOS ARM64
+curl -L https://github.com/larrykoo711/bibo/releases/latest/download/bibo-darwin-arm64.tar.gz | tar xz
+sudo mv bibo /usr/local/bin/
 ```
 
 ### From Source
@@ -28,12 +51,15 @@ brew install larrykoo711/tap/bibo
 git clone https://github.com/larrykoo711/bibo.git
 cd bibo
 cargo build --release
+sudo cp target/release/bibo /usr/local/bin/
 ```
 
-Requires Python 3.10+ with `piper-tts`:
+### Python Dependency
+
+Bibo requires Python 3.10+ with `piper-tts`:
 
 ```bash
-pip install piper-tts
+pip3 install piper-tts
 ```
 
 ## Quick Start
@@ -60,20 +86,20 @@ bibo -f "Quick announcement"
 
 ## Available Voices
 
-| Voice    | Language   | Gender |
-|----------|------------|--------|
-| amy      | English US | Female |
-| danny    | English US | Male   |
-| joe      | English US | Male   |
-| kathleen | English US | Female |
-| alan     | English GB | Male   |
-| alba     | English GB | Female |
-| eva      | Spanish ES | Female |
-| camille  | French FR  | Female |
-| thorsten | German DE  | Male   |
-| riccardo | Italian IT | Male   |
-| irina    | Russian RU | Female |
-| dmitri   | Russian RU | Male   |
+| Voice    | Language   | Gender | Quality |
+|----------|------------|--------|---------|
+| amy      | English US | Female | Medium  |
+| danny    | English US | Male   | Medium  |
+| joe      | English US | Male   | Medium  |
+| kathleen | English US | Female | Medium  |
+| alan     | English GB | Male   | Medium  |
+| alba     | English GB | Female | Medium  |
+| eva      | Spanish ES | Female | Medium  |
+| camille  | French FR  | Female | Medium  |
+| thorsten | German DE  | Male   | Medium  |
+| riccardo | Italian IT | Male   | Medium  |
+| irina    | Russian RU | Female | Medium  |
+| dmitri   | Russian RU | Male   | Medium  |
 
 ## Usage
 
@@ -96,9 +122,16 @@ Options:
   -V, --version          Print version
 ```
 
+## Environment Variables
+
+```bash
+export BIBO_VOICE="amy"    # Default voice
+export BIBO_SPEED="normal" # Default speed
+```
+
 ## Requirements
 
-- macOS 12+ or Linux (x86_64, arm64)
+- macOS 12+ (ARM64) or Linux (coming soon)
 - Python 3.10+
 - ~50MB per voice model
 
@@ -111,6 +144,14 @@ Bibo uses a hybrid architecture:
 
 This gives you the best of both worlds: instant CLI startup and proven neural TTS quality.
 
+## Roadmap
+
+- [x] macOS ARM64 support
+- [ ] macOS x64 support
+- [ ] Linux x64 support
+- [ ] More voice models
+- [ ] Streaming synthesis
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
@@ -120,6 +161,14 @@ MIT License - see [LICENSE](LICENSE) for details.
 - [Piper TTS](https://github.com/rhasspy/piper) - Neural TTS engine
 - Voice models from [Piper Voices](https://huggingface.co/rhasspy/piper-voices)
 
+## Links
+
+- 🌐 **Website**: [larrykoo711.github.io/bibo](https://larrykoo711.github.io/bibo)
+- 📦 **Releases**: [github.com/larrykoo711/bibo/releases](https://github.com/larrykoo711/bibo/releases)
+- 🍺 **Homebrew**: `brew install larrykoo711/tap/bibo`
+
 ---
 
-**Move fast. Ship it. Bibo.** 🚀
+<p align="center">
+  <strong>Move fast. Ship it. Bibo.</strong> 🚀
+</p>
