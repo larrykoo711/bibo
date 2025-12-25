@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bibo - Fast Local Neural TTS</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0a0f;
+      --bg-card: #12121a;
+      --accent: #00d4ff;
+      --accent-glow: rgba(0, 212, 255, 0.3);
+      --text: #e4e4e7;
+      --text-dim: #71717a;
+      --border: #27272a;
+      --success: #22c55e;
+      --warning: #f59e0b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 80px 0 60px;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 3.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      text-shadow: 0 0 40px var(--accent-glow);
+    }
+
+    .tagline {
+      font-size: 1.25rem;
+      color: var(--text-dim);
+      max-width: 500px;
+      margin: 0 auto 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid var(--success);
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--success);
+    }
+
+    /* Install Section */
+    .install-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      margin: 40px 0;
+    }
+
+    .install-section h2 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      color: var(--accent);
+    }
+
+    .code-block {
+      background: #1a1a24;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      overflow-x: auto;
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .code-block::before {
+      content: '$';
+      color: var(--accent);
+      margin-right: 12px;
+    }
+
+    .code-block code {
+      color: var(--text);
+    }
+
+    .code-alt {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-top: 12px;
+    }
+
+    /* Features Grid */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin: 60px 0;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+    }
+
+    /* Demo Section */
+    .demo-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      margin: 40px 0;
+    }
+
+    .demo-section h2 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      color: var(--accent);
+    }
+
+    .demo-list {
+      list-style: none;
+    }
+
+    .demo-list li {
+      margin-bottom: 16px;
+    }
+
+    .demo-list .code-block {
+      margin-bottom: 8px;
+    }
+
+    .demo-list .desc {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      padding-left: 24px;
+    }
+
+    /* Voices Section */
+    .voices-section {
+      margin: 60px 0;
+    }
+
+    .voices-section h2 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .voice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .voice-tag {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    .voice-tag:hover {
+      border-color: var(--accent);
+    }
+
+    .voice-tag .lang {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* Requirements */
+    .requirements {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(168, 85, 247, 0.05));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      margin: 60px 0;
+    }
+
+    .requirements h2 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+    }
+
+    .req-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .req-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+    }
+
+    .req-list li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 60px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    footer a:hover {
+      opacity: 0.8;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 24px;
+    }
+
+    .footer-meta {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      h1 { font-size: 2.5rem; }
+      .logo { font-size: 3rem; }
+      .install-section, .demo-section, .requirements { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">🎙️</div>
+      <h1>Bibo</h1>
+      <p class="tagline">Fast, local neural text-to-speech. No cloud. No latency. Just speak.</p>
+      <span class="badge">100% Local • Open Source</span>
+    </header>
+
+    <section class="install-section">
+      <h2>$ Quick Install</h2>
+      <div class="code-block"><code>brew install larrykoo711/tap/bibo</code></div>
+      <p class="code-alt">Or download from <a href="https://github.com/larrykoo711/bibo/releases" style="color: var(--accent)">GitHub Releases</a></p>
+    </section>
+
+    <section class="features">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Lightning Fast</h3>
+        <p>Rust-powered CLI with instant startup. Synthesize speech in milliseconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>100% Local</h3>
+        <p>All processing happens on your machine. Your text never leaves your device.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎭</div>
+        <h3>12 Neural Voices</h3>
+        <p>High-quality voices in multiple languages. Natural, expressive speech synthesis.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛠️</div>
+        <h3>Unix Philosophy</h3>
+        <p>Pipe-friendly, scriptable, composable. Works with your existing workflows.</p>
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2>$ Examples</h2>
+      <ul class="demo-list">
+        <li>
+          <div class="code-block"><code>bibo "Hello, world!"</code></div>
+          <p class="desc">Speak text with default voice</p>
+        </li>
+        <li>
+          <div class="code-block"><code>bibo -l</code></div>
+          <p class="desc">List available voices</p>
+        </li>
+        <li>
+          <div class="code-block"><code>bibo -d amy</code></div>
+          <p class="desc">Download a voice model</p>
+        </li>
+        <li>
+          <div class="code-block"><code>bibo "Welcome" -v amy -o welcome.wav</code></div>
+          <p class="desc">Save speech to file</p>
+        </li>
+        <li>
+          <div class="code-block"><code>cat article.txt | bibo</code></div>
+          <p class="desc">Read from stdin</p>
+        </li>
+        <li>
+          <div class="code-block"><code>bibo -f "Quick announcement" -v danny</code></div>
+          <p class="desc">Fast mode (1.2x speed)</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="voices-section">
+      <h2>🎭 Available Voices</h2>
+      <div class="voice-grid">
+        <div class="voice-tag">amy<div class="lang">English US</div></div>
+        <div class="voice-tag">danny<div class="lang">English US</div></div>
+        <div class="voice-tag">joe<div class="lang">English US</div></div>
+        <div class="voice-tag">kathleen<div class="lang">English US</div></div>
+        <div class="voice-tag">alan<div class="lang">English GB</div></div>
+        <div class="voice-tag">alba<div class="lang">English GB</div></div>
+        <div class="voice-tag">eva<div class="lang">Spanish ES</div></div>
+        <div class="voice-tag">camille<div class="lang">French FR</div></div>
+        <div class="voice-tag">thorsten<div class="lang">German DE</div></div>
+        <div class="voice-tag">riccardo<div class="lang">Italian IT</div></div>
+        <div class="voice-tag">irina<div class="lang">Russian RU</div></div>
+        <div class="voice-tag">dmitri<div class="lang">Russian RU</div></div>
+      </div>
+    </section>
+
+    <section class="requirements">
+      <h2>📋 Requirements</h2>
+      <ul class="req-list">
+        <li>macOS 12+ or Linux</li>
+        <li>Python 3.10+</li>
+        <li>~50MB per voice model</li>
+        <li>Audio output device</li>
+      </ul>
+    </section>
+
+    <footer>
+      <div class="footer-links">
+        <a href="https://github.com/larrykoo711/bibo">GitHub</a>
+        <a href="https://github.com/larrykoo711/bibo/releases">Releases</a>
+        <a href="https://github.com/larrykoo711/bibo/issues">Issues</a>
+      </div>
+      <p class="footer-meta">MIT License • Built with Rust & Piper TTS</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+[package]
+name = "bibo"
+version = "0.1.0"
+edition = "2021"
+authors = ["Larry Koo <larrykoo711@gmail.com>"]
+description = "Fast, local neural text-to-speech CLI"
+license = "MIT"
+repository = "https://github.com/larrykoo711/bibo"
+homepage = "https://larrykoo711.github.io/bibo"
+keywords = ["tts", "text-to-speech", "piper", "cli", "neural"]
+categories = ["command-line-utilities", "multimedia::audio"]
+readme = "README.md"
+
+[dependencies]
+# CLI framework
+clap = { version = "4", features = ["derive", "env", "color"] }
+
+# Audio playback
+rodio = "0.20"
+
+# Async runtime (for downloads)
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs"] }
+
+# HTTP client for downloads
+reqwest = { version = "0.12", features = ["stream"] }
+
+# Progress bars
+indicatif = "0.17"
+
+# Colored output
+colored = "2"
+
+# Error handling
+anyhow = "1"
+thiserror = "2"
+
+# Serialization (for voice config)
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Home directory
+dirs = "6"
+
+# Futures utilities
+futures-util = "0.3"
+
+# WAV file handling
+hound = "3"
+
+# Regex (lightweight)
+regex-lite = "0.1"
+
+# Temp files
+tempfile = "3"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+
+[[bin]]
+name = "bibo"
+path = "src/main.rs"

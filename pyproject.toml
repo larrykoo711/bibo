@@ -1,0 +1,11 @@
+[project]
+name = "bibo-tts"
+version = "0.1.0"
+description = "Python TTS backend for Bibo"
+requires-python = ">=3.10"
+dependencies = [
+    "piper-tts>=1.2.0",
+]
+
+[tool.uv]
+dev-dependencies = []
