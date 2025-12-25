@@ -3,400 +3,588 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bibo - Fast Local Neural TTS</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Bibo - Your Local Voice</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0a0a0f;
-      --bg-card: #12121a;
-      --accent: #00d4ff;
-      --accent-glow: rgba(0, 212, 255, 0.3);
-      --text: #e4e4e7;
-      --text-dim: #71717a;
-      --border: #27272a;
-      --success: #22c55e;
-      --warning: #f59e0b;
+      --bg: #0a0e17;
+      --bg-card: #0f1520;
+      --cyan: #00ffd5;
+      --purple: #bf5af2;
+      --gold: #ffd60a;
+      --text: #e8e8e8;
+      --dim: #6b7280;
+      --border: #1e293b;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg-dark);
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
+    /* Starfield Background */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background:
+        radial-gradient(1px 1px at 20px 30px, white, transparent),
+        radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 50px 160px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 90px 40px, white, transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1.5px 1.5px at 160px 120px, var(--cyan), transparent),
+        radial-gradient(1px 1px at 200px 50px, white, transparent),
+        radial-gradient(1px 1px at 250px 90px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 300px 150px, white, transparent),
+        radial-gradient(1.5px 1.5px at 350px 30px, var(--purple), transparent);
+      background-size: 400px 200px;
+      animation: twinkle 8s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
+    }
+
+    .nav-brand {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .nav-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--dim);
+      text-decoration: none;
+      padding: 8px 16px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .nav-links a.primary {
+      background: var(--cyan);
+      color: #000;
+      font-weight: 700;
+    }
+
+    .nav-links a.primary:hover {
+      box-shadow: 0 0 20px rgba(0, 255, 213, 0.4);
+    }
+
+    /* Container */
     .container {
-      max-width: 900px;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Header */
-    header {
-      padding: 80px 0 60px;
-      text-align: center;
+      padding: 120px 24px 80px;
       position: relative;
+      z-index: 1;
     }
 
-    .logo {
+    /* Hero */
+    .hero {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .hero-icon {
       font-size: 4rem;
-      margin-bottom: 16px;
-      animation: float 3s ease-in-out infinite;
+      margin-bottom: 24px;
+      display: inline-block;
+      animation: float 4s ease-in-out infinite;
     }
 
     @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
     }
 
-    h1 {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 3.5rem;
+    .hero h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 4rem;
       font-weight: 700;
-      background: linear-gradient(135deg, var(--accent), #a855f7);
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 16px;
-      text-shadow: 0 0 40px var(--accent-glow);
+      letter-spacing: -2px;
     }
 
-    .tagline {
-      font-size: 1.25rem;
-      color: var(--text-dim);
-      max-width: 500px;
-      margin: 0 auto 24px;
+    .hero-tagline {
+      font-size: 1.4rem;
+      color: var(--dim);
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    .hero-tagline em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
     }
 
     .badge {
-      display: inline-block;
-      padding: 6px 14px;
-      background: rgba(34, 197, 94, 0.15);
-      border: 1px solid var(--success);
-      border-radius: 20px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      color: var(--success);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: rgba(0, 255, 213, 0.1);
+      border: 1px solid rgba(0, 255, 213, 0.3);
+      color: var(--cyan);
     }
 
-    /* Hero Audio Player */
+    .badge.warning {
+      background: rgba(255, 214, 10, 0.1);
+      border-color: rgba(255, 214, 10, 0.3);
+      color: var(--gold);
+    }
+
+    /* Audio Hero */
     .hero-audio {
-      margin-top: 32px;
+      margin-top: 40px;
+    }
+
+    .play-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      border: none;
+      border-radius: 50px;
+      color: #000;
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .play-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .play-hero:hover::before {
+      left: 100%;
+    }
+
+    .play-hero:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(0, 255, 213, 0.5);
+    }
+
+    .play-hero.playing {
+      background: linear-gradient(135deg, var(--purple), var(--cyan));
+    }
+
+    .audio-hint {
+      font-size: 0.8rem;
+      color: var(--dim);
+      margin-top: 12px;
+    }
+
+    /* Story Section */
+    .story {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 60px;
+      position: relative;
+    }
+
+    .story::before {
+      content: '"';
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      font-family: Georgia, serif;
+      font-size: 4rem;
+      color: var(--cyan);
+      opacity: 0.3;
+    }
+
+    .story p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 16px;
+      padding-left: 20px;
+    }
+
+    .story p:last-child {
+      margin-bottom: 0;
+    }
+
+    .story strong {
+      color: var(--cyan);
+    }
+
+    .story em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    /* Install */
+    .install {
+      margin-bottom: 60px;
+    }
+
+    .install h2 {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--cyan);
+      margin-bottom: 20px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       gap: 12px;
     }
 
-    .play-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 28px;
-      background: linear-gradient(135deg, var(--accent), #a855f7);
-      border: none;
-      border-radius: 50px;
-      color: #000;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+    .install h2::before {
+      content: '$';
+      opacity: 0.5;
     }
 
-    .play-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 30px var(--accent-glow);
-    }
-
-    .play-btn:active {
-      transform: scale(0.98);
-    }
-
-    .play-btn.playing {
-      background: linear-gradient(135deg, #a855f7, var(--accent));
-    }
-
-    .hero-audio-label {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-    }
-
-    /* Install Section */
-    .install-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 40px;
-      margin: 40px 0;
-    }
-
-    .install-section h2 {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.5rem;
-      margin-bottom: 24px;
-      color: var(--accent);
-    }
-
-    .code-block {
-      background: #1a1a24;
+    .code-box {
+      background: #000;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 16px 20px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
-      overflow-x: auto;
-      position: relative;
-      margin-bottom: 16px;
+      padding: 20px 24px;
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      color: var(--cyan);
+      margin-bottom: 12px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-    }
-
-    .code-block .code-content {
-      display: flex;
       align-items: center;
     }
 
-    .code-block .code-content::before {
-      content: '$';
-      color: var(--accent);
-      margin-right: 12px;
+    .code-box .copy-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--dim);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .code-block code {
-      color: var(--text);
+    .code-box .copy-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
     }
 
-    .code-alt {
+    .install-alt {
       font-size: 0.85rem;
-      color: var(--text-dim);
-      margin-top: 12px;
+      color: var(--dim);
     }
 
-    /* Mini Play Button */
-    .play-mini {
-      width: 36px;
-      height: 36px;
+    .install-alt a {
+      color: var(--purple);
+    }
+
+    /* Examples */
+    .examples {
+      margin-bottom: 60px;
+    }
+
+    .examples h2 {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .example-list {
+      list-style: none;
+      counter-reset: example;
+    }
+
+    .example-list li {
+      counter-increment: example;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .example-list li::before {
+      content: counter(example);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--dim);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-radius: 50%;
-      background: rgba(0, 212, 255, 0.15);
-      border: 1px solid var(--accent);
-      color: var(--accent);
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .example-content {
+      flex: 1;
+    }
+
+    .example-code {
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .example-code .cmd::before {
+      content: '$ ';
+      color: var(--cyan);
+    }
+
+    .example-desc {
+      font-size: 0.85rem;
+      color: var(--dim);
+    }
+
+    .play-sm {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 255, 213, 0.15);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 0.7rem;
       transition: all 0.2s;
       flex-shrink: 0;
     }
 
-    .play-mini:hover {
-      background: rgba(0, 212, 255, 0.3);
-      transform: scale(1.1);
-    }
-
-    .play-mini:active {
-      transform: scale(0.95);
-    }
-
-    .play-mini.playing {
-      background: var(--accent);
+    .play-sm:hover {
+      background: var(--cyan);
       color: #000;
     }
 
-    /* Features Grid */
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      margin: 60px 0;
+    .play-sm.playing {
+      background: var(--cyan);
+      color: #000;
     }
 
-    .feature-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px;
-      transition: transform 0.2s, border-color 0.2s;
+    /* Voices */
+    .voices {
+      margin-bottom: 60px;
     }
 
-    .feature-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--accent);
-    }
-
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 16px;
-    }
-
-    .feature-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 8px;
+    .voices h2 {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.2rem;
       color: var(--text);
-    }
-
-    .feature-card p {
-      font-size: 0.9rem;
-      color: var(--text-dim);
-    }
-
-    /* Demo Section */
-    .demo-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 40px;
-      margin: 40px 0;
-    }
-
-    .demo-section h2 {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.5rem;
-      margin-bottom: 24px;
-      color: var(--accent);
-    }
-
-    .demo-list {
-      list-style: none;
-    }
-
-    .demo-list li {
-      margin-bottom: 16px;
-    }
-
-    .demo-list .code-block {
-      margin-bottom: 8px;
-    }
-
-    .demo-list .desc {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      padding-left: 24px;
-    }
-
-    /* Voices Section */
-    .voices-section {
-      margin: 60px 0;
-    }
-
-    .voices-section h2 {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.5rem;
       margin-bottom: 24px;
       text-align: center;
     }
 
     .voice-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 12px;
     }
 
-    .voice-tag {
+    .voice-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 16px;
       text-align: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      transition: border-color 0.2s;
-      position: relative;
+      transition: all 0.2s;
+      cursor: pointer;
     }
 
-    .voice-tag:hover {
-      border-color: var(--accent);
+    .voice-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-2px);
     }
 
-    .voice-tag .lang {
+    .voice-card.has-audio:hover {
+      box-shadow: 0 0 20px rgba(0, 255, 213, 0.2);
+    }
+
+    .voice-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .voice-lang {
       font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-top: 4px;
+      color: var(--dim);
+      margin-bottom: 12px;
     }
 
-    .voice-tag .voice-play {
-      margin-top: 12px;
-    }
-
-    .voice-tag .voice-play button {
+    .voice-play {
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: rgba(0, 212, 255, 0.15);
-      border: 1px solid var(--accent);
-      color: var(--accent);
+      background: rgba(0, 255, 213, 0.1);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       transition: all 0.2s;
     }
 
-    .voice-tag .voice-play button:hover {
-      background: rgba(0, 212, 255, 0.3);
-      transform: scale(1.1);
+    .voice-play:hover {
+      background: var(--cyan);
+      color: #000;
     }
 
-    .voice-tag .voice-play button.playing {
-      background: var(--accent);
+    .voice-play.playing {
+      background: var(--cyan);
       color: #000;
+    }
+
+    .voice-play:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
     }
 
     /* Requirements */
     .requirements {
-      background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(168, 85, 247, 0.05));
+      background: linear-gradient(135deg, rgba(0, 255, 213, 0.05), rgba(191, 90, 242, 0.05));
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 40px;
-      margin: 60px 0;
+      padding: 32px;
+      margin-bottom: 60px;
     }
 
     .requirements h2 {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.5rem;
-      margin-bottom: 24px;
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 20px;
     }
 
-    .req-list {
-      list-style: none;
+    .req-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .req-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--dim);
+    }
+
+    .req-item::before {
+      content: '✓';
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    /* Warning */
+    .warning-box {
+      background: rgba(255, 214, 10, 0.05);
+      border: 1px solid rgba(255, 214, 10, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 60px;
+      display: flex;
       gap: 16px;
     }
 
-    .req-list li {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.95rem;
+    .warning-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
     }
 
-    .req-list li::before {
-      content: '✓';
-      color: var(--success);
-      font-weight: bold;
+    .warning-content h3 {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .warning-content p {
+      font-size: 0.85rem;
+      color: var(--dim);
+      line-height: 1.6;
     }
 
     /* Footer */
     footer {
       text-align: center;
-      padding: 60px 0;
+      padding: 40px 0;
       border-top: 1px solid var(--border);
-      margin-top: 60px;
-    }
-
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
-      transition: opacity 0.2s;
-    }
-
-    footer a:hover {
-      opacity: 0.8;
     }
 
     .footer-links {
@@ -406,226 +594,294 @@
       margin-bottom: 24px;
     }
 
-    .footer-meta {
+    .footer-links a {
+      font-family: 'Space Mono', monospace;
       font-size: 0.85rem;
-      color: var(--text-dim);
+      color: var(--dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--cyan);
+    }
+
+    .footer-meta {
+      font-size: 0.8rem;
+      color: var(--dim);
+    }
+
+    .footer-meta a {
+      color: var(--purple);
+      text-decoration: none;
     }
 
     /* Responsive */
     @media (max-width: 640px) {
-      h1 { font-size: 2.5rem; }
-      .logo { font-size: 3rem; }
-      .install-section, .demo-section, .requirements { padding: 24px; }
+      .hero h1 { font-size: 2.5rem; }
+      .nav-links { gap: 12px; }
+      .nav-links a { padding: 6px 12px; font-size: 0.75rem; }
+      .req-grid { grid-template-columns: 1fr; }
+      .story { padding: 24px; }
     }
   </style>
 </head>
 <body>
+  <div class="stars"></div>
+
+  <nav>
+    <a href="#" class="nav-brand">🎙️ Bibo</a>
+    <div class="nav-links">
+      <a href="https://github.com/larrykoo711/bibo">GitHub</a>
+      <a href="https://github.com/larrykoo711/bibo/releases">Releases</a>
+      <a href="https://github.com/larrykoo711/bibo/issues">Issues</a>
+      <a href="https://github.com/larrykoo711/bibo" class="primary">★ Star</a>
+    </div>
+  </nav>
+
   <div class="container">
-    <header>
-      <div class="logo">🎙️</div>
+    <header class="hero">
+      <div class="hero-icon">🎙️</div>
       <h1>Bibo</h1>
-      <p class="tagline">Fast, local neural text-to-speech. No cloud. No latency. Just speak.</p>
-      <span class="badge">100% Local • Open Source</span>
+      <p class="hero-tagline">Your text. <em>Your voice.</em> Your machine.</p>
+
+      <div class="badge-row">
+        <span class="badge">100% LOCAL</span>
+        <span class="badge">NEURAL TTS</span>
+        <span class="badge">OPEN SOURCE</span>
+        <span class="badge warning">⚠ MOSTLY HARMLESS</span>
+      </div>
 
       <div class="hero-audio">
-        <button class="play-btn" onclick="playAudio('hero-amy', this)">
-          <span class="play-icon">▶</span>
-          <span>Listen to Bibo</span>
+        <button class="play-hero" onclick="playAudio('hero-audio', this)">
+          <span>▶</span>
+          <span>HEAR BIBO SPEAK</span>
         </button>
-        <p class="hero-audio-label">Click to hear a sample</p>
-        <audio id="hero-amy" src="audio/hero-amy.wav" preload="none"></audio>
+        <p class="audio-hint">Click to experience neural TTS magic</p>
+        <audio id="hero-audio" src="audio/hero-amy.wav" preload="none"></audio>
       </div>
     </header>
 
-    <section class="install-section">
-      <h2>$ Quick Install</h2>
-      <div class="code-block">
-        <div class="code-content"><code>brew install larrykoo711/tap/bibo</code></div>
-      </div>
-      <p class="code-alt">Or download from <a href="https://github.com/larrykoo711/bibo/releases" style="color: var(--accent)">GitHub Releases</a></p>
-    </section>
-
-    <section class="features">
-      <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3>Lightning Fast</h3>
-        <p>Rust-powered CLI with instant startup. Synthesize speech in milliseconds.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔒</div>
-        <h3>100% Local</h3>
-        <p>All processing happens on your machine. Your text never leaves your device.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🎭</div>
-        <h3>Neural Voices</h3>
-        <p>High-quality voices in multiple languages. Natural, expressive speech synthesis.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🛠️</div>
-        <h3>Unix Philosophy</h3>
-        <p>Pipe-friendly, scriptable, composable. Works with your existing workflows.</p>
-      </div>
-    </section>
-
-    <section class="demo-section">
-      <h2>$ Examples</h2>
-      <ul class="demo-list">
-        <li>
-          <div class="code-block">
-            <div class="code-content"><code>bibo "The quick brown fox jumps over the lazy dog."</code></div>
-            <button class="play-mini" onclick="playAudio('example-amy', this)" title="Play">▶</button>
-          </div>
-          <p class="desc">Speak text with default voice (Amy)</p>
-          <audio id="example-amy" src="audio/example-amy.wav" preload="none"></audio>
-        </li>
-        <li>
-          <div class="code-block">
-            <div class="code-content"><code>bibo "Welcome to Bibo." -v ryan</code></div>
-            <button class="play-mini" onclick="playAudio('example-ryan', this)" title="Play">▶</button>
-          </div>
-          <p class="desc">Use a different voice (Ryan - male)</p>
-          <audio id="example-ryan" src="audio/example-ryan.wav" preload="none"></audio>
-        </li>
-        <li>
-          <div class="code-block">
-            <div class="code-content"><code>bibo -l</code></div>
-          </div>
-          <p class="desc">List available voices</p>
-        </li>
-        <li>
-          <div class="code-block">
-            <div class="code-content"><code>bibo -d amy</code></div>
-          </div>
-          <p class="desc">Download a voice model</p>
-        </li>
-        <li>
-          <div class="code-block">
-            <div class="code-content"><code>bibo "Welcome" -o welcome.wav</code></div>
-          </div>
-          <p class="desc">Save speech to file</p>
-        </li>
-        <li>
-          <div class="code-block">
-            <div class="code-content"><code>cat article.txt | bibo</code></div>
-          </div>
-          <p class="desc">Read from stdin</p>
-        </li>
-      </ul>
-    </section>
-
-    <section class="voices-section">
-      <h2>🎭 Voice Samples</h2>
-      <div class="voice-grid">
-        <div class="voice-tag">
-          amy
-          <div class="lang">English US • Female</div>
-          <div class="voice-play">
-            <button onclick="playAudio('example-amy', this)" title="Play">▶</button>
-          </div>
-        </div>
-        <div class="voice-tag">
-          ryan
-          <div class="lang">English US • Male</div>
-          <div class="voice-play">
-            <button onclick="playAudio('example-ryan', this)" title="Play">▶</button>
-          </div>
-        </div>
-        <div class="voice-tag">
-          huayan
-          <div class="lang">中文 • 女声</div>
-          <div class="voice-play">
-            <button onclick="playAudio('example-huayan', this)" title="Play">▶</button>
-          </div>
-          <audio id="example-huayan" src="audio/example-huayan.wav" preload="none"></audio>
-        </div>
-        <div class="voice-tag">
-          irina
-          <div class="lang">Русский • Жен.</div>
-          <div class="voice-play">
-            <button onclick="playAudio('example-irina', this)" title="Play">▶</button>
-          </div>
-          <audio id="example-irina" src="audio/example-irina.wav" preload="none"></audio>
-        </div>
-        <div class="voice-tag">
-          eva
-          <div class="lang">Español • Fem.</div>
-          <div class="voice-play" style="opacity: 0.3">
-            <button disabled title="Coming soon">▶</button>
-          </div>
-        </div>
-        <div class="voice-tag">
-          camille
-          <div class="lang">Français • Fem.</div>
-          <div class="voice-play" style="opacity: 0.3">
-            <button disabled title="Coming soon">▶</button>
-          </div>
-        </div>
-      </div>
-      <p style="text-align: center; margin-top: 24px; color: var(--text-dim); font-size: 0.85rem;">
-        + 6 more voices available • <a href="https://github.com/larrykoo711/bibo#available-voices" style="color: var(--accent)">View all</a>
+    <section class="story">
+      <p>
+        In the age of cloud everything, your words travel thousands of miles just to become sound.
+        They pass through servers, get logged, analyzed, maybe even <em>listened to</em>.
+      </p>
+      <p>
+        <strong>Bibo believes your voice should stay yours.</strong>
+      </p>
+      <p>
+        A tiny neural network lives on your machine. It reads your text. It speaks.
+        No internet required. No accounts. No subscriptions. No limits.
+        Just <em>you</em> and <em>your words</em>.
       </p>
     </section>
 
-    <section class="requirements">
-      <h2>📋 Requirements</h2>
-      <ul class="req-list">
-        <li>macOS 12+ (ARM64)</li>
-        <li>Python 3.10+</li>
-        <li>~50MB per voice model</li>
-        <li>Audio output device</li>
+    <section class="install">
+      <h2>Quick Install</h2>
+      <div class="code-box">
+        <code>brew install larrykoo711/tap/bibo</code>
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+      </div>
+      <p class="install-alt">
+        Or grab from <a href="https://github.com/larrykoo711/bibo/releases">GitHub Releases</a>
+        • Requires <a href="https://www.python.org/">Python 3.10+</a> with <code>pip install piper-tts</code>
+      </p>
+    </section>
+
+    <section class="examples">
+      <h2>// How it works</h2>
+      <ul class="example-list">
+        <li>
+          <div class="example-content">
+            <div class="example-code">
+              <span class="cmd">bibo "The quick brown fox jumps over the lazy dog."</span>
+              <button class="play-sm" onclick="playAudio('ex-amy', this)">▶</button>
+            </div>
+            <p class="example-desc">Speak text instantly with neural voice</p>
+            <audio id="ex-amy" src="audio/example-amy.wav" preload="none"></audio>
+          </div>
+        </li>
+        <li>
+          <div class="example-content">
+            <div class="example-code">
+              <span class="cmd">bibo "Welcome to Bibo." -v ryan</span>
+              <button class="play-sm" onclick="playAudio('ex-ryan', this)">▶</button>
+            </div>
+            <p class="example-desc">Switch voices with -v flag</p>
+            <audio id="ex-ryan" src="audio/example-ryan.wav" preload="none"></audio>
+          </div>
+        </li>
+        <li>
+          <div class="example-content">
+            <div class="example-code">
+              <span class="cmd">bibo -d amy</span>
+            </div>
+            <p class="example-desc">Download voice models (~50MB each)</p>
+          </div>
+        </li>
+        <li>
+          <div class="example-content">
+            <div class="example-code">
+              <span class="cmd">cat essay.txt | bibo -o reading.wav</span>
+            </div>
+            <p class="example-desc">Pipe text, save to file. Unix philosophy.</p>
+          </div>
+        </li>
+        <li>
+          <div class="example-content">
+            <div class="example-code">
+              <span class="cmd">bibo -f "Ship it!"</span>
+            </div>
+            <p class="example-desc">Fast mode. 1.2x speed. For the impatient.</p>
+          </div>
+        </li>
       </ul>
+    </section>
+
+    <section class="voices">
+      <h2>// Voice Gallery</h2>
+      <div class="voice-grid">
+        <div class="voice-card has-audio" onclick="playAudio('ex-amy', this.querySelector('.voice-play'))">
+          <div class="voice-name">amy</div>
+          <div class="voice-lang">English US • ♀</div>
+          <button class="voice-play">▶</button>
+        </div>
+        <div class="voice-card has-audio" onclick="playAudio('ex-ryan', this.querySelector('.voice-play'))">
+          <div class="voice-name">ryan</div>
+          <div class="voice-lang">English US • ♂</div>
+          <button class="voice-play">▶</button>
+        </div>
+        <div class="voice-card has-audio" onclick="playAudio('ex-huayan', this.querySelector('.voice-play'))">
+          <div class="voice-name">huayan</div>
+          <div class="voice-lang">中文 • ♀</div>
+          <button class="voice-play">▶</button>
+          <audio id="ex-huayan" src="audio/example-huayan.wav" preload="none"></audio>
+        </div>
+        <div class="voice-card has-audio" onclick="playAudio('ex-irina', this.querySelector('.voice-play'))">
+          <div class="voice-name">irina</div>
+          <div class="voice-lang">Русский • ♀</div>
+          <button class="voice-play">▶</button>
+          <audio id="ex-irina" src="audio/example-irina.wav" preload="none"></audio>
+        </div>
+        <div class="voice-card">
+          <div class="voice-name">eva</div>
+          <div class="voice-lang">Español • ♀</div>
+          <button class="voice-play" disabled>▶</button>
+        </div>
+        <div class="voice-card">
+          <div class="voice-name">thorsten</div>
+          <div class="voice-lang">Deutsch • ♂</div>
+          <button class="voice-play" disabled>▶</button>
+        </div>
+      </div>
+      <p style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--dim);">
+        + more voices • run <code style="color: var(--cyan);">bibo -l</code> to explore
+      </p>
+    </section>
+
+    <div class="warning-box">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-content">
+        <h3>MOSTLY HARMLESS</h3>
+        <p>
+          This is v0.1.0. The code is fresh. The edges are rough.
+          It works on my machine™. Probably works on yours too.
+          If not, <a href="https://github.com/larrykoo711/bibo/issues" style="color: var(--gold);">file an issue</a>.
+          We'll figure it out together.
+        </p>
+      </div>
+    </div>
+
+    <section class="requirements">
+      <h2>// System Requirements</h2>
+      <div class="req-grid">
+        <div class="req-item">macOS 12+ (Apple Silicon)</div>
+        <div class="req-item">Python 3.10+</div>
+        <div class="req-item">~50MB per voice model</div>
+        <div class="req-item">Speakers or headphones</div>
+      </div>
     </section>
 
     <footer>
       <div class="footer-links">
         <a href="https://github.com/larrykoo711/bibo">GitHub</a>
-        <a href="https://github.com/larrykoo711/bibo/releases">Releases</a>
-        <a href="https://github.com/larrykoo711/bibo/issues">Issues</a>
+        <a href="https://github.com/larrykoo711/bibo/releases">Downloads</a>
+        <a href="https://github.com/larrykoo711/bibo/issues">Report Bug</a>
+        <a href="https://github.com/larrykoo711/bibo#readme">Documentation</a>
       </div>
-      <p class="footer-meta">MIT License • Built with Rust & Piper TTS</p>
+      <p class="footer-meta">
+        MIT License • Built with Rust + <a href="https://github.com/rhasspy/piper">Piper TTS</a><br>
+        Made somewhere on Earth. Probably.
+      </p>
     </footer>
   </div>
 
   <script>
     let currentAudio = null;
-    let currentButton = null;
+    let currentBtn = null;
 
     function playAudio(id, btn) {
       const audio = document.getElementById(id);
+      if (!audio) return;
 
-      // Stop current audio if playing
+      // Stop previous
       if (currentAudio && currentAudio !== audio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
-        if (currentButton) {
-          currentButton.classList.remove('playing');
-          currentButton.innerHTML = '▶';
+        if (currentBtn) {
+          currentBtn.classList.remove('playing');
+          currentBtn.innerHTML = '▶' + (currentBtn.classList.contains('play-hero') ? '<span>HEAR BIBO SPEAK</span>' : '');
         }
       }
 
       if (audio.paused) {
         audio.play();
         btn.classList.add('playing');
-        btn.innerHTML = '⏸';
+        if (btn.classList.contains('play-hero')) {
+          btn.innerHTML = '<span>⏸</span><span>PLAYING...</span>';
+        } else {
+          btn.innerHTML = '⏸';
+        }
         currentAudio = audio;
-        currentButton = btn;
+        currentBtn = btn;
       } else {
         audio.pause();
         audio.currentTime = 0;
         btn.classList.remove('playing');
-        btn.innerHTML = '▶';
+        if (btn.classList.contains('play-hero')) {
+          btn.innerHTML = '<span>▶</span><span>HEAR BIBO SPEAK</span>';
+        } else {
+          btn.innerHTML = '▶';
+        }
         currentAudio = null;
-        currentButton = null;
+        currentBtn = null;
       }
 
-      // Reset button when audio ends
       audio.onended = () => {
         btn.classList.remove('playing');
-        btn.innerHTML = '▶';
+        if (btn.classList.contains('play-hero')) {
+          btn.innerHTML = '<span>▶</span><span>HEAR BIBO SPEAK</span>';
+        } else {
+          btn.innerHTML = '▶';
+        }
         currentAudio = null;
-        currentButton = null;
+        currentBtn = null;
       };
+    }
+
+    function copyCode(btn) {
+      const code = btn.previousElementSibling.textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'COPIED!';
+        btn.style.color = 'var(--cyan)';
+        btn.style.borderColor = 'var(--cyan)';
+        setTimeout(() => {
+          btn.textContent = 'COPY';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      });
     }
   </script>
 </body>
