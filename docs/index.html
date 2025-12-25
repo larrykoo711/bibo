@@ -248,6 +248,22 @@
       color: #dea584;
     }
 
+    /* Hero Install */
+    .hero-install {
+      margin: 32px auto 0;
+      max-width: 420px;
+    }
+
+    .hero-code {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--cyan);
+      box-shadow: 0 0 20px rgba(0, 255, 213, 0.15);
+    }
+
+    .hero-code code {
+      color: var(--cyan);
+    }
+
     /* Audio Hero */
     .hero-audio {
       margin-top: 40px;
@@ -814,6 +830,13 @@
         <span class="badge rust">🦀 RUST</span>
         <span class="badge">NEURAL TTS</span>
         <span class="badge warning">OPEN SOURCE</span>
+      </div>
+
+      <div class="hero-install">
+        <div class="code-box hero-code">
+          <code>brew install larrykoo711/tap/bibo</code>
+          <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        </div>
       </div>
 
       <div class="hero-audio">
