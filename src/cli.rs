@@ -44,7 +44,7 @@ impl Default for Speed {
     bibo -l                         List installed voices
 
 ENVIRONMENT VARIABLES:
-    BIBO_VOICE    Default voice (default: amy)
+    BIBO_VOICE    Default voice (default: melo)
     BIBO_SPEED    Default speed (default: normal)
 "#)]
 pub struct Cli {
@@ -53,7 +53,7 @@ pub struct Cli {
     pub text: Option<String>,
 
     /// Voice model to use
-    #[arg(short, long, env = "BIBO_VOICE", default_value = "amy")]
+    #[arg(short, long, env = "BIBO_VOICE", default_value = "melo")]
     pub voice: String,
 
     /// Speech speed
