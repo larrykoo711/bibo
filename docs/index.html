@@ -1366,18 +1366,22 @@
           <div class="example-content">
             <div class="example-code">
               <span class="cmd">bibo -f "Move fast. Break things."</span>
+              <button class="play-sm" onclick="playAudio('ex-fast', this)">▶</button>
             </div>
             <p class="example-desc" data-lang="en">⚡ Fast mode (-f) — 1.2x speed</p>
             <p class="example-desc" data-lang="zh">⚡ 快速模式 (-f) — 1.2 倍速</p>
+            <audio id="ex-fast" src="audio/example-fast.wav" preload="none"></audio>
           </div>
         </li>
         <li>
           <div class="example-content">
             <div class="example-code">
               <span class="cmd">bibo "Done." -o done.wav</span>
+              <button class="play-sm" onclick="playAudio('ex-done', this)">▶</button>
             </div>
             <p class="example-desc" data-lang="en">💾 Save to file with -o option</p>
             <p class="example-desc" data-lang="zh">💾 使用 -o 保存到文件</p>
+            <audio id="ex-done" src="audio/example-done.wav" preload="none"></audio>
           </div>
         </li>
       </ul>
