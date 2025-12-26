@@ -1,16 +1,18 @@
-//! TTS synthesis engine using Python piper-tts as backend
+//! TTS synthesis engine using sherpa-onnx binary
 //!
-//! Rust CLI wrapper + Python TTS engine hybrid approach
+//! Zero Python dependency - uses native sherpa-onnx binary
+//! Supports arm64 and x86_64 via universal binary
 
 use crate::error::{BiboError, Result};
+use crate::tts::sherpa::{find_sherpa_tts, sherpa_env};
 use crate::tts::voice::VoiceCatalog;
 use std::path::PathBuf;
 use std::process::Command;
 
-/// TTS Engine wrapper (calls Python piper-tts)
+/// TTS Engine wrapper (calls sherpa-onnx binary)
 pub struct TtsEngine {
-    model_path: PathBuf,
-    config_path: PathBuf,
+    model_dir: PathBuf,
+    voice_id: String,
 }
 
 impl TtsEngine {
@@ -20,80 +22,93 @@ impl TtsEngine {
             .ok_or_else(|| BiboError::VoiceNotFound(voice_id.to_string()))?;
 
         let models_dir = VoiceCatalog::models_dir();
-        let model_path = models_dir.join(voice.model_filename());
-        let config_path = models_dir.join(voice.config_filename());
+        let model_dir = voice.model_dir_path(&models_dir);
 
-        if !model_path.exists() {
+        if !model_dir.exists() {
             return Err(BiboError::VoiceNotInstalled(voice_id.to_string()));
         }
 
-        if !config_path.exists() {
+        // Check model.onnx exists
+        let model_path = model_dir.join("model.onnx");
+        if !model_path.exists() {
             return Err(BiboError::ConfigError(format!(
-                "Config file missing for voice: {}",
+                "Model file missing for voice: {}",
                 voice_id
             )));
         }
 
         Ok(Self {
-            model_path,
-            config_path,
+            model_dir,
+            voice_id: voice_id.to_string(),
         })
     }
 
-    /// Get Python command (uv run or system python)
-    fn python_cmd() -> Vec<String> {
-        // Try uv first
-        if Command::new("uv").arg("--version").output().is_ok() {
-            vec!["uv".to_string(), "run".to_string(), "python".to_string()]
-        } else {
-            vec!["python3".to_string()]
+    /// Build sherpa-onnx command with model arguments
+    fn build_command(&self, sherpa_path: &PathBuf) -> Result<Command> {
+        let mut cmd = Command::new(sherpa_path);
+
+        // Set library path for dynamic libraries
+        for (key, value) in sherpa_env() {
+            cmd.env(key, value);
         }
+
+        let model_path = self.model_dir.join("model.onnx");
+        let tokens_path = self.model_dir.join("tokens.txt");
+        let lexicon_path = self.model_dir.join("lexicon.txt");
+        let dict_dir = self.model_dir.join("dict");
+        let data_dir = self.model_dir.join("espeak-ng-data");
+
+        // Required: model and tokens
+        cmd.arg(format!("--vits-model={}", model_path.display()));
+
+        if tokens_path.exists() {
+            cmd.arg(format!("--vits-tokens={}", tokens_path.display()));
+        }
+
+        // Optional: lexicon
+        if lexicon_path.exists() {
+            cmd.arg(format!("--vits-lexicon={}", lexicon_path.display()));
+        }
+
+        // Optional: dict directory (for MeloTTS Chinese)
+        if dict_dir.exists() {
+            cmd.arg(format!("--vits-dict-dir={}", dict_dir.display()));
+        }
+
+        // Optional: espeak-ng data (for piper models)
+        if data_dir.exists() {
+            cmd.arg(format!("--vits-data-dir={}", data_dir.display()));
+        }
+
+        Ok(cmd)
     }
 
-    /// Synthesize text to WAV file using Python piper-tts
+    /// Synthesize text to WAV file using sherpa-onnx binary
     pub fn synthesize_to_file(
         &self,
         text: &str,
         length_scale: f32,
         output_path: &str,
     ) -> Result<()> {
-        let python_cmd = Self::python_cmd();
+        let sherpa_path = find_sherpa_tts()?;
 
-        // Python script to synthesize
-        let script = format!(
-            r#"
-import sys
-import wave
-from piper.voice import PiperVoice
-from piper.config import SynthesisConfig
+        let mut cmd = self.build_command(&sherpa_path)?;
 
-voice = PiperVoice.load("{model}", "{config}")
-syn_config = SynthesisConfig(length_scale={length_scale})
+        // Output file and speed (length_scale: larger = slower)
+        cmd.arg(format!("--output-filename={}", output_path));
+        cmd.arg(format!("--vits-length-scale={:.2}", length_scale));
 
-with wave.open("{output}", "wb") as wav_file:
-    voice.synthesize_wav('''{text}''', wav_file, syn_config=syn_config)
-"#,
-            model = self.model_path.display(),
-            config = self.config_path.display(),
-            length_scale = length_scale,
-            output = output_path,
-            text = text.replace("'''", r"\'\'\'"),
-        );
-
-        let mut cmd = Command::new(&python_cmd[0]);
-        for arg in &python_cmd[1..] {
-            cmd.arg(arg);
-        }
-        cmd.arg("-c").arg(&script);
+        // Text as positional argument
+        cmd.arg(text);
 
         let output = cmd
             .output()
-            .map_err(|e| BiboError::SynthesisFailed(format!("Failed to run Python: {}", e)))?;
+            .map_err(|e| BiboError::SynthesisFailed(format!("Failed to run sherpa-onnx: {}", e)))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
             return Err(BiboError::SynthesisFailed(format!(
-                "Python error: {}",
+                "sherpa-onnx error: {}",
                 stderr
             )));
         }
@@ -107,8 +122,6 @@ with wave.open("{output}", "wb") as wav_file:
             .map_err(|e| BiboError::Other(format!("Failed to create temp file: {}", e)))?;
 
         let temp_path = temp_file.path().to_str().unwrap();
-
-        // Use file extension for WAV
         let wav_path = format!("{}.wav", temp_path);
 
         self.synthesize_to_file(text, length_scale, &wav_path)?;
@@ -126,5 +139,16 @@ with wave.open("{output}", "wb") as wav_file:
         let _ = std::fs::remove_file(&wav_path);
 
         Ok(samples)
+    }
+
+    /// Get sample rate for audio playback
+    pub fn sample_rate(&self) -> u32 {
+        // Most sherpa-onnx VITS models use 22050 Hz
+        // MeloTTS uses 44100 Hz
+        if self.voice_id.to_lowercase().contains("melo") {
+            44100
+        } else {
+            22050
+        }
     }
 }

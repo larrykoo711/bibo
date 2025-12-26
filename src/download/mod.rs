@@ -1,6 +1,9 @@
-//! Voice download module with fallback mirrors
+//! Download module - voices and sherpa-onnx binary
+
+pub mod sherpa;
 
 use crate::error::{BiboError, Result};
+pub use sherpa::SherpaDownloader;
 use crate::tts::voice::{Voice, VoiceCatalog, VOICE_CATALOG};
 use colored::Colorize;
 use futures_util::StreamExt;
@@ -9,19 +12,7 @@ use std::path::PathBuf;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 
-/// Download sources (primary + fallback)
-const DOWNLOAD_SOURCES: &[(&str, &str)] = &[
-    (
-        "huggingface",
-        "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0",
-    ),
-    (
-        "hf_mirror",
-        "https://hf-mirror.com/rhasspy/piper-voices/resolve/v1.0.0",
-    ),
-];
-
-/// Voice downloader
+/// Voice downloader for sherpa-onnx models
 pub struct VoiceDownloader;
 
 impl VoiceDownloader {
@@ -32,15 +23,15 @@ impl VoiceDownloader {
         println!("\n{}", "📦 Available voices for download:".cyan().bold());
         println!();
         println!(
-            "{:<3} {:<10} {:<10} {:<6} {:<3} {:<7} {:<6} {}",
+            "{:<3} {:<12} {:<12} {:<8} {:<3} {:<7} {:<6} {}",
             "#", "ID", "Name", "Lang", "G", "Quality", "Size", "Status"
         );
-        println!("{}", "─".repeat(70));
+        println!("{}", "─".repeat(75));
 
         for (idx, voice) in VOICE_CATALOG.iter().enumerate() {
             let is_installed = installed
                 .iter()
-                .any(|v| v.to_lowercase().contains(voice.id));
+                .any(|v| v.to_lowercase().contains(&voice.model_dir.to_lowercase()));
             let status = if is_installed {
                 "✅ installed".green().to_string()
             } else {
@@ -48,7 +39,7 @@ impl VoiceDownloader {
             };
 
             println!(
-                "{:<3} {:<10} {:<10} {:<6} {:<3} {:<7} {}MB  {}",
+                "{:<3} {:<12} {:<12} {:<8} {:<3} {:<7} {}MB  {}",
                 idx + 1,
                 voice.id,
                 voice.name,
@@ -65,6 +56,12 @@ impl VoiceDownloader {
         println!("   bibo -d <id>        Download single voice");
         println!("   bibo -d all         Download all voices");
         println!("   bibo -d 1,3,5       Download by numbers");
+        println!();
+        println!("{}", "🌍 Languages:".yellow());
+        println!("   melo    - Chinese + English bilingual (recommended)");
+        println!("   kss     - Korean");
+        println!("   amy     - English (US)");
+        println!("   huayan  - Chinese");
     }
 
     /// Download a voice by ID
@@ -78,8 +75,9 @@ impl VoiceDownloader {
             .map_err(|e| BiboError::Other(format!("Failed to create models dir: {}", e)))?;
 
         // Check if already installed
-        let model_file = models_dir.join(voice.model_filename());
-        if model_file.exists() {
+        let model_dir = voice.model_dir_path(&models_dir);
+        let model_path = model_dir.join("model.onnx");
+        if model_path.exists() {
             if !quiet {
                 println!(
                     "{} {} ({}) already installed",
@@ -103,66 +101,59 @@ impl VoiceDownloader {
             );
         }
 
-        // Try each source
-        for (source_name, base_url) in DOWNLOAD_SOURCES {
-            if !quiet {
-                println!("   Source: {}", source_name);
-            }
+        // Download tar.bz2 from sherpa-onnx releases
+        let temp_tar = models_dir.join(format!("{}.tar.bz2", voice.model_dir));
 
-            let success = Self::download_from_source(voice, base_url, &models_dir, quiet).await;
-
-            if success {
-                if !quiet {
-                    println!("{} {} installed successfully!", "✅".green(), voice.name);
-                }
-                return Ok(true);
-            } else if !quiet {
-                println!(
-                    "   {} {} failed, trying next...",
-                    "⚠️".yellow(),
-                    source_name
-                );
-            }
+        if !quiet {
+            println!("   Source: sherpa-onnx");
         }
 
-        Err(BiboError::DownloadFailed(voice.name.to_string()))
+        Self::download_file(voice.download_url, &temp_tar, quiet).await?;
+
+        // Extract tar.bz2
+        if !quiet {
+            println!("   {} Extracting...", "📂".cyan());
+        }
+
+        Self::extract_tar_bz2(&temp_tar, &models_dir).await?;
+
+        // Clean up temp file
+        let _ = tokio::fs::remove_file(&temp_tar).await;
+
+        // Verify extraction
+        if !model_path.exists() {
+            return Err(BiboError::DownloadFailed(format!(
+                "Model file not found after extraction: {}",
+                voice.name
+            )));
+        }
+
+        if !quiet {
+            println!("{} {} installed successfully!", "✅".green(), voice.name);
+        }
+
+        Ok(true)
     }
 
-    /// Download from a specific source
-    async fn download_from_source(
-        voice: &Voice,
-        base_url: &str,
-        models_dir: &PathBuf,
-        quiet: bool,
-    ) -> bool {
-        for ext in [".onnx", ".onnx.json"] {
-            let url = format!("{}/{}{}", base_url, voice.hf_path, ext);
-            let filename = format!("{}{}", voice.hf_path.split('/').last().unwrap(), ext);
-            let dest = models_dir.join(&filename);
+    /// Extract tar.bz2 file
+    async fn extract_tar_bz2(tar_path: &PathBuf, dest_dir: &PathBuf) -> Result<()> {
+        use std::process::Command;
 
-            if !quiet {
-                let file_type = if ext == ".onnx" { "model" } else { "config" };
-                print!("   📄 {}...", file_type);
-            }
+        // Use system tar command
+        let output = Command::new("tar")
+            .arg("-xjf")
+            .arg(tar_path)
+            .arg("-C")
+            .arg(dest_dir)
+            .output()
+            .map_err(|e| BiboError::Other(format!("Failed to run tar: {}", e)))?;
 
-            match Self::download_file(&url, &dest, quiet).await {
-                Ok(_) => {
-                    if !quiet {
-                        println!(" ✓");
-                    }
-                }
-                Err(_) => {
-                    if !quiet {
-                        println!(" ❌");
-                    }
-                    // Clean up partial download
-                    let _ = tokio::fs::remove_file(&dest).await;
-                    return false;
-                }
-            }
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(BiboError::Other(format!("tar extraction failed: {}", stderr)));
         }
 
-        true
+        Ok(())
     }
 
     /// Download a single file with progress
@@ -189,7 +180,7 @@ impl VoiceDownloader {
             let pb = ProgressBar::new(total_size);
             pb.set_style(
                 ProgressStyle::default_bar()
-                    .template("   [{bar:20.cyan/blue}] {percent}%")
+                    .template("   [{bar:30.cyan/blue}] {bytes}/{total_bytes} ({percent}%)")
                     .unwrap()
                     .progress_chars("█░"),
             );

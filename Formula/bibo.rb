@@ -1,59 +1,92 @@
 class Bibo < Formula
-  desc "Fast, local neural text-to-speech CLI"
+  desc "Fast, local neural text-to-speech CLI - zero dependencies"
   homepage "https://larrykoo711.github.io/bibo"
-  version "0.1.0"
+  version "0.3.0"
   license "MIT"
+
+  # Sherpa-onnx TTS engine version
+  SHERPA_VERSION = "1.12.20"
 
   on_macos do
     on_arm do
       url "https://github.com/larrykoo711/bibo/releases/download/v#{version}/bibo-darwin-arm64.tar.gz"
-      sha256 "PLACEHOLDER_SHA256_ARM64"
+      sha256 "PLACEHOLDER_SHA256_BIBO_ARM64"
+
+      resource "sherpa" do
+        url "https://github.com/k2-fsa/sherpa-onnx/releases/download/v#{SHERPA_VERSION}/sherpa-onnx-v#{SHERPA_VERSION}-osx-universal2-shared.tar.bz2"
+        sha256 "PLACEHOLDER_SHA256_SHERPA_MACOS"
+      end
     end
+
     on_intel do
       url "https://github.com/larrykoo711/bibo/releases/download/v#{version}/bibo-darwin-x64.tar.gz"
-      sha256 "PLACEHOLDER_SHA256_X64"
+      sha256 "PLACEHOLDER_SHA256_BIBO_X64"
+
+      resource "sherpa" do
+        url "https://github.com/k2-fsa/sherpa-onnx/releases/download/v#{SHERPA_VERSION}/sherpa-onnx-v#{SHERPA_VERSION}-osx-universal2-shared.tar.bz2"
+        sha256 "PLACEHOLDER_SHA256_SHERPA_MACOS"
+      end
     end
   end
 
   on_linux do
-    url "https://github.com/larrykoo711/bibo/releases/download/v#{version}/bibo-linux-x64.tar.gz"
-    sha256 "PLACEHOLDER_SHA256_LINUX"
+    on_intel do
+      url "https://github.com/larrykoo711/bibo/releases/download/v#{version}/bibo-linux-x64.tar.gz"
+      sha256 "PLACEHOLDER_SHA256_BIBO_LINUX_X64"
+
+      resource "sherpa" do
+        url "https://github.com/k2-fsa/sherpa-onnx/releases/download/v#{SHERPA_VERSION}/sherpa-onnx-v#{SHERPA_VERSION}-linux-x64-shared.tar.bz2"
+        sha256 "PLACEHOLDER_SHA256_SHERPA_LINUX_X64"
+      end
+    end
+
+    on_arm do
+      url "https://github.com/larrykoo711/bibo/releases/download/v#{version}/bibo-linux-arm64.tar.gz"
+      sha256 "PLACEHOLDER_SHA256_BIBO_LINUX_ARM64"
+
+      resource "sherpa" do
+        url "https://github.com/k2-fsa/sherpa-onnx/releases/download/v#{SHERPA_VERSION}/sherpa-onnx-v#{SHERPA_VERSION}-linux-aarch64-shared.tar.bz2"
+        sha256 "PLACEHOLDER_SHA256_SHERPA_LINUX_ARM64"
+      end
+    end
   end
 
-  depends_on "python@3.13"
-
   def install
+    # Install bibo binary
     bin.install "bibo"
 
-    # Create wrapper script that sets up Python environment
-    (bin/"bibo").write <<~EOS
-      #!/bin/bash
-      export BIBO_PYTHON_DEPS_INSTALLED="${HOME}/.bibo/python-deps"
+    # Install bundled sherpa-onnx TTS engine
+    resource("sherpa").stage do
+      # Create sherpa directory structure
+      (libexec/"sherpa").mkpath
 
-      # Install Python dependencies on first run
-      if [ ! -f "$BIBO_PYTHON_DEPS_INSTALLED" ]; then
-        echo "Installing Python dependencies (first run only)..."
-        pip3 install --user piper-tts >/dev/null 2>&1
-        mkdir -p "$(dirname "$BIBO_PYTHON_DEPS_INSTALLED")"
-        touch "$BIBO_PYTHON_DEPS_INSTALLED"
-      fi
+      # Install bin and lib directories
+      (libexec/"sherpa/bin").install Dir["bin/*"]
+      (libexec/"sherpa/lib").install Dir["lib/*"]
 
-      exec "#{libexec}/bibo" "$@"
-    EOS
-
-    libexec.install Dir["*"]
+      # Make binaries executable
+      chmod 0755, Dir[libexec/"sherpa/bin/*"]
+    end
   end
 
   def caveats
     <<~EOS
-      Bibo requires Python piper-tts for TTS synthesis.
-      On first run, it will install piper-tts automatically.
+      Bibo is ready to use! No additional setup required.
 
       Quick start:
-        bibo "Hello, world!"                 # Speak text
-        bibo -l                              # List available voices
-        bibo -d amy                          # Download a voice
+        bibo "Hello, world!"                 # Speak text (auto-downloads default voice)
+        bibo "你好世界" -v melo              # Chinese + English bilingual voice
+        bibo -l                              # List installed voices
+        bibo -d list                         # Show downloadable voices
         bibo "Hello" -v amy -o hello.wav     # Save to file
+
+      Sherpa-onnx TTS engine is bundled at: #{libexec}/sherpa
+
+      Voice Models:
+        melo    - Chinese + English bilingual (recommended)
+        amy     - English (US)
+        kss     - Korean
+        huayan  - Chinese
     EOS
   end
 

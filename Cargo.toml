@@ -1,13 +1,13 @@
 [package]
 name = "bibo"
-version = "0.1.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Larry Koo <larrykoo711@gmail.com>"]
-description = "Fast, local neural text-to-speech CLI"
+description = "Fast, local neural text-to-speech CLI - zero dependencies"
 license = "MIT"
 repository = "https://github.com/larrykoo711/bibo"
 homepage = "https://larrykoo711.github.io/bibo"
-keywords = ["tts", "text-to-speech", "piper", "cli", "neural"]
+keywords = ["tts", "text-to-speech", "sherpa-onnx", "cli", "neural"]
 categories = ["command-line-utilities", "multimedia::audio"]
 readme = "README.md"
 

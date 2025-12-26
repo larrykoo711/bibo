@@ -31,6 +31,9 @@ pub enum BiboError {
     #[error("Download failed: {0}")]
     DownloadFailed(String),
 
+    #[error("Sherpa-onnx TTS engine not found")]
+    SherpaNotFound,
+
     #[error("TTS synthesis failed: {0}")]
     SynthesisFailed(String),
 
@@ -97,6 +100,10 @@ impl BiboError {
                 "Check your internet connection",
                 "Try again later",
                 "Use VPN if HuggingFace is blocked",
+            ],
+            BiboError::SherpaNotFound => vec![
+                "brew install larrykoo711/tap/bibo  # Reinstall with bundled sherpa-onnx",
+                "Or run: bibo --setup  # Auto-download sherpa-onnx",
             ],
             BiboError::SynthesisFailed(_) | BiboError::PlaybackFailed(_) => vec![
                 "Check if voice model is valid",

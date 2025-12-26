@@ -1,6 +1,7 @@
 //! Bibo - Fast, local neural text-to-speech
 //!
-//! Built with Silicon Valley standards: simple, fast, powerful
+//! Zero dependencies - powered by sherpa-onnx
+//! Universal binary support for arm64 and x86_64
 
 mod audio;
 mod cli;
@@ -11,11 +12,11 @@ mod tts;
 use clap::Parser;
 use cli::Cli;
 use colored::Colorize;
-use download::VoiceDownloader;
+use download::{SherpaDownloader, VoiceDownloader};
 use error::BiboError;
 use std::fs;
 use std::path::Path;
-use tempfile::NamedTempFile;
+use tts::sherpa_available;
 
 /// Clean markdown formatting for TTS
 fn clean_markdown(text: &str) -> String {
@@ -136,6 +137,17 @@ fn read_file_content(path: &str, quiet: bool) -> Result<String, BiboError> {
 async fn main() {
     let cli = Cli::parse();
 
+    // Ensure sherpa-onnx is available (auto-download if needed)
+    if !sherpa_available() {
+        if !cli.quiet {
+            println!("{} First run setup - downloading sherpa-onnx TTS engine...", "🚀".cyan());
+        }
+        if let Err(e) = SherpaDownloader::download(cli.quiet).await {
+            e.show();
+            std::process::exit(1);
+        }
+    }
+
     // Download mode
     if let Some(spec) = &cli.download {
         match VoiceDownloader::download_by_spec(spec, cli.quiet).await {
@@ -156,12 +168,17 @@ async fn main() {
         } else {
             println!("{}", "📢 Installed voices:".cyan().bold());
             for v in &voices {
+                // Find matching voice in catalog
+                let voice_info = tts::VOICE_CATALOG.iter()
+                    .find(|voice| voice.model_dir == v)
+                    .map(|voice| format!(" ({}, {})", voice.id, voice.lang))
+                    .unwrap_or_default();
                 let prefix = if v.to_lowercase().contains(&cli.voice.to_lowercase()) {
                     "→"
                 } else {
                     " "
                 };
-                println!("  {} {}", prefix, v);
+                println!("  {} {}{}", prefix, v, voice_info);
             }
             println!("\n{} Download more: bibo -d list", "💡".yellow());
         }
@@ -187,6 +204,19 @@ async fn main() {
     // Get speed
     let speed = cli.effective_speed();
     let length_scale = speed.to_length_scale();
+
+    // Auto-download voice if not installed
+    if !tts::VoiceCatalog::is_installed(&cli.voice) {
+        if tts::VoiceCatalog::find(&cli.voice).is_some() {
+            if !cli.quiet {
+                println!("{} Voice '{}' not installed, downloading...", "📥".cyan(), cli.voice);
+            }
+            if let Err(e) = VoiceDownloader::download_voice(&cli.voice, cli.quiet).await {
+                e.show();
+                std::process::exit(1);
+            }
+        }
+    }
 
     // Create TTS engine
     let engine = match tts::TtsEngine::new(&cli.voice) {
@@ -220,7 +250,7 @@ async fn main() {
                 if !cli.quiet {
                     println!("{} Playing...", "▶️".cyan());
                 }
-                if let Err(e) = audio::AudioPlayer::play_samples(samples, 22050) {
+                if let Err(e) = audio::AudioPlayer::play_samples(samples, engine.sample_rate()) {
                     e.show();
                     std::process::exit(1);
                 }

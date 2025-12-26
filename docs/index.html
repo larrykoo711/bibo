@@ -1044,11 +1044,11 @@
       </div>
       <p class="install-alt" data-lang="en">
         Or grab from <a href="https://github.com/larrykoo711/bibo/releases">GitHub Releases</a>
-        • Requires <a href="https://www.python.org/">Python 3.10+</a> with <code>pip install piper-tts</code>
+        • Zero dependencies — TTS engine auto-downloads on first run
       </p>
       <p class="install-alt" data-lang="zh">
         或从 <a href="https://github.com/larrykoo711/bibo/releases">GitHub Releases</a> 下载
-        • 需要 <a href="https://www.python.org/">Python 3.10+</a> 并执行 <code>pip install piper-tts</code>
+        • 零依赖 — TTS 引擎首次运行时自动下载
       </p>
     </section>
 
@@ -1062,7 +1062,7 @@
         <button class="copy-btn" onclick="copyCode(this)">COPY</button>
       </div>
       <div class="code-box integration-code" style="margin-top: 16px;" data-lang="zh">
-        <code style="color: var(--gold);">用 bibo 语音播报：任务完成、构建状态、风险提醒。简短有力，适当幽默。</code>
+        <code style="color: var(--gold);">使用 bibo CLI 进行语音播报：任务完成、构建状态、风险提醒。简短有力，适当幽默。</code>
         <button class="copy-btn" onclick="copyCode(this)">COPY</button>
       </div>
       <p class="integration-hint" data-lang="en">Then Claude says things like: <em>"Ship it. Tests green."</em> or <em>"Hold up. This looks risky."</em></p>
@@ -1070,28 +1070,36 @@
     </section>
 
     <section class="examples">
-      <h2>// How it works</h2>
+      <h2 data-lang="en">// Examples by Language</h2>
+      <h2 data-lang="zh">// 多语言示例</h2>
       <ul class="example-list">
         <li>
           <div class="example-content">
             <div class="example-code">
-              <span class="cmd">bibo "Ship it. All tests green. Let's go."</span>
+              <span class="cmd">bibo "Hello world. 你好世界。" -v melo</span>
+            </div>
+            <p class="example-desc" data-lang="en">🌏 Chinese + English bilingual with MeloTTS (default voice)</p>
+            <p class="example-desc" data-lang="zh">🌏 MeloTTS 中英双语（默认语音）</p>
+          </div>
+        </li>
+        <li>
+          <div class="example-content">
+            <div class="example-code">
+              <span class="cmd">bibo "Ship it. All tests green." -v amy</span>
               <button class="play-sm" onclick="playAudio('ex-amy', this)">▶</button>
             </div>
-            <p class="example-desc" data-lang="en">Build passed. Ship it. Elon would approve.</p>
-            <p class="example-desc" data-lang="zh">构建通过。发布吧。马斯克风格。</p>
+            <p class="example-desc" data-lang="en">🇺🇸 English (US) with Amy voice</p>
+            <p class="example-desc" data-lang="zh">🇺🇸 英语（美式）Amy 语音</p>
             <audio id="ex-amy" src="audio/example-amy.wav" preload="none"></audio>
           </div>
         </li>
         <li>
           <div class="example-content">
             <div class="example-code">
-              <span class="cmd">bibo "Houston, we have a problem." -v ryan</span>
-              <button class="play-sm" onclick="playAudio('ex-ryan', this)">▶</button>
+              <span class="cmd">bibo "안녕하세요. 빌드가 완료되었습니다." -v kss</span>
             </div>
-            <p class="example-desc" data-lang="en">Error detected. Apollo 13 vibes.</p>
-            <p class="example-desc" data-lang="zh">发现错误。阿波罗 13 号即视感。</p>
-            <audio id="ex-ryan" src="audio/example-ryan.wav" preload="none"></audio>
+            <p class="example-desc" data-lang="en">🇰🇷 Korean with KSS voice</p>
+            <p class="example-desc" data-lang="zh">🇰🇷 韩语 KSS 语音</p>
           </div>
         </li>
         <li>
@@ -1100,8 +1108,8 @@
               <span class="cmd">bibo "搞定了。发布吧。" -v huayan</span>
               <button class="play-sm" onclick="playAudio('ex-huayan', this)">▶</button>
             </div>
-            <p class="example-desc" data-lang="en">Done. Ship it. In Chinese.</p>
-            <p class="example-desc" data-lang="zh">搞定了。发布吧。中文语音。</p>
+            <p class="example-desc" data-lang="en">🇨🇳 Chinese with Huayan voice</p>
+            <p class="example-desc" data-lang="zh">🇨🇳 中文 Huayan 语音</p>
             <audio id="ex-huayan" src="audio/example-huayan.wav" preload="none"></audio>
           </div>
         </li>
@@ -1110,19 +1118,17 @@
             <div class="example-code">
               <span class="cmd">bibo -f "Move fast. Break things."</span>
             </div>
-            <p class="example-desc" data-lang="en">Fast mode. 1.2x speed. Zuckerberg approved.</p>
-            <p class="example-desc" data-lang="zh">快速模式。1.2 倍速。扎克伯格同款。</p>
+            <p class="example-desc" data-lang="en">⚡ Fast mode (-f) — 1.2x speed</p>
+            <p class="example-desc" data-lang="zh">⚡ 快速模式 (-f) — 1.2 倍速</p>
           </div>
         </li>
         <li>
           <div class="example-content">
             <div class="example-code">
-              <span class="cmd">bibo "The best code is no code."</span>
-              <button class="play-sm" onclick="playAudio('ex-nocode', this)">▶</button>
+              <span class="cmd">bibo "Done." -o done.wav</span>
             </div>
-            <p class="example-desc" data-lang="en">Refactoring wisdom. Less is more.</p>
-            <p class="example-desc" data-lang="zh">重构智慧。少即是多。</p>
-            <audio id="ex-nocode" src="audio/example-nocode.wav" preload="none"></audio>
+            <p class="example-desc" data-lang="en">💾 Save to file with -o option</p>
+            <p class="example-desc" data-lang="zh">💾 使用 -o 保存到文件</p>
           </div>
         </li>
       </ul>
@@ -1136,10 +1142,10 @@
           <div class="voice-lang">English US • ♀</div>
           <button class="voice-play">▶</button>
         </div>
-        <div class="voice-card has-audio" onclick="playAudio('ex-ryan', this.querySelector('.voice-play'))">
+        <div class="voice-card">
           <div class="voice-name">ryan</div>
           <div class="voice-lang">English US • ♂</div>
-          <button class="voice-play">▶</button>
+          <button class="voice-play" disabled>▶</button>
         </div>
         <div class="voice-card has-audio" onclick="playAudio('ex-huayan', this.querySelector('.voice-play'))">
           <div class="voice-name">huayan</div>
@@ -1173,8 +1179,9 @@
       <h2 data-lang="en">// System Requirements</h2>
       <h2 data-lang="zh">// 系统要求</h2>
       <div class="req-grid">
-        <div class="req-item">macOS 12+ (Apple Silicon)</div>
-        <div class="req-item">Python 3.10+</div>
+        <div class="req-item">macOS 12+ / Linux</div>
+        <div class="req-item" data-lang="en">Zero dependencies</div>
+        <div class="req-item" data-lang="zh">零依赖</div>
         <div class="req-item" data-lang="en">~50MB per voice model</div>
         <div class="req-item" data-lang="zh">每个语音模型约 50MB</div>
         <div class="req-item" data-lang="en">Speakers or headphones</div>
@@ -1190,7 +1197,7 @@
         <a href="https://github.com/larrykoo711/bibo#readme">Docs</a>
       </div>
       <p class="footer-meta">
-        MIT License • Built with Rust + <a href="https://github.com/rhasspy/piper">Piper TTS</a><br>
+        MIT License • Built with Rust + <a href="https://github.com/k2-fsa/sherpa-onnx">sherpa-onnx</a><br>
         <span data-lang="en">Give voice to your AI. Ship faster.</span>
         <span data-lang="zh">让 AI 开口，让开发更快。</span>
       </p>

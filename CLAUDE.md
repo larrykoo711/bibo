@@ -53,11 +53,10 @@ bibo "The best code is no code."
 ## Installation
 
 ```bash
-# macOS (Homebrew)
+# macOS / Linux (Homebrew)
 brew install larrykoo711/tap/bibo
 
-# Dependency
-pip install piper-tts
+# That's it! Zero dependencies - sherpa-onnx engine auto-downloads on first run.
 ```
 
 ## Voice Options
