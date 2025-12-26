@@ -887,13 +887,271 @@
 
     /* Responsive */
     @media (max-width: 640px) {
-      .hero h1 { font-size: 2.5rem; }
-      .nav-links { gap: 8px; }
-      .nav-links a { padding: 6px 10px; font-size: 0.75rem; }
-      .nav-links a:not(.primary):not(:has(.lang-switch)) { display: none; }
-      .req-grid { grid-template-columns: 1fr; }
-      .case-grid { grid-template-columns: 1fr; }
-      .story { padding: 24px; }
+      .container {
+        padding: 100px 16px 60px;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+        letter-spacing: -1px;
+      }
+
+      .hero-tagline {
+        font-size: 1.2rem;
+      }
+
+      .hero-sub {
+        font-size: 0.95rem;
+      }
+
+      .bibo-player {
+        width: 160px;
+        height: 160px;
+      }
+
+      .bibo-core {
+        width: 110px;
+        height: 110px;
+      }
+
+      .bibo-text {
+        font-size: 1.5rem;
+      }
+
+      .wave-ring-1 { width: 130px; height: 130px; }
+      .wave-ring-2 { width: 145px; height: 145px; }
+      .wave-ring-3 { width: 160px; height: 160px; }
+
+      .badge-row {
+        gap: 8px;
+      }
+
+      .badge {
+        font-size: 0.65rem;
+        padding: 4px 8px;
+      }
+
+      /* Code box: stack vertically on mobile */
+      .code-box {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 16px;
+      }
+
+      .code-box code {
+        font-size: 0.8rem;
+        word-break: break-all;
+        text-align: center;
+      }
+
+      .code-box .copy-btn {
+        align-self: center;
+        width: 100%;
+        max-width: 120px;
+      }
+
+      .hero-code {
+        white-space: normal;
+      }
+
+      .hero-code code {
+        white-space: normal;
+      }
+
+      /* Navigation */
+      .nav-links {
+        gap: 6px;
+      }
+
+      .nav-links a {
+        padding: 6px 10px;
+        font-size: 0.7rem;
+      }
+
+      .nav-links a:not(.primary):not(:has(.lang-switch)) {
+        display: none;
+      }
+
+      .lang-switch button {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+      }
+
+      /* Story section */
+      .story {
+        padding: 24px 20px;
+      }
+
+      .story p {
+        font-size: 0.95rem;
+        padding-left: 12px;
+      }
+
+      .story .highlight {
+        font-size: 1.1rem;
+        padding: 12px 16px;
+      }
+
+      .story::before {
+        font-size: 3rem;
+        left: 16px;
+      }
+
+      /* Grids */
+      .req-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .case-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .voice-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .voice-card {
+        padding: 12px;
+      }
+
+      .voice-name {
+        font-size: 0.9rem;
+      }
+
+      .voice-lang {
+        font-size: 0.7rem;
+      }
+
+      /* Examples */
+      .example-list li {
+        gap: 12px;
+      }
+
+      .example-list li::before {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
+      }
+
+      .example-code {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .example-code .cmd {
+        font-size: 0.75rem;
+        word-break: break-all;
+      }
+
+      .example-code .cmd::before {
+        content: '$ ';
+      }
+
+      .play-sm {
+        align-self: flex-end;
+      }
+
+      .example-desc {
+        font-size: 0.8rem;
+      }
+
+      /* Integration */
+      .integration {
+        padding: 24px 16px;
+      }
+
+      .integration h2 {
+        font-size: 1rem;
+      }
+
+      .integration p {
+        font-size: 0.85rem;
+      }
+
+      .integration-code {
+        padding: 12px;
+      }
+
+      .integration-code code {
+        font-size: 0.75rem;
+        word-break: break-word;
+      }
+
+      /* Requirements */
+      .requirements {
+        padding: 24px 16px;
+      }
+
+      .requirements h2 {
+        font-size: 0.9rem;
+      }
+
+      .req-item {
+        font-size: 0.8rem;
+      }
+
+      /* Footer */
+      .footer-links {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .footer-links a {
+        font-size: 0.8rem;
+      }
+
+      .footer-meta {
+        font-size: 0.75rem;
+      }
+
+      /* Use cases */
+      .case-card {
+        padding: 16px;
+      }
+
+      .case-icon {
+        font-size: 1.2rem;
+      }
+
+      .case-title {
+        font-size: 0.85rem;
+      }
+
+      .case-desc {
+        font-size: 0.8rem;
+      }
+
+      /* Install section */
+      .install h2 {
+        font-size: 1rem;
+      }
+
+      .install-alt {
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Extra small screens */
+    @media (max-width: 380px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .badge {
+        font-size: 0.6rem;
+        padding: 3px 6px;
+      }
+
+      .code-box code {
+        font-size: 0.7rem;
+      }
+
+      .voice-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
