@@ -137,6 +137,29 @@ fn read_file_content(path: &str, quiet: bool) -> Result<String, BiboError> {
 async fn main() {
     let cli = Cli::parse();
 
+    // Clean mode - remove all data
+    if cli.clean {
+        let data_dir = dirs::data_dir()
+            .unwrap_or_else(|| std::path::PathBuf::from("."))
+            .join("bibo");
+
+        if data_dir.exists() {
+            match fs::remove_dir_all(&data_dir) {
+                Ok(_) => {
+                    println!("{} Removed all bibo data: {}", "🧹".cyan(), data_dir.display());
+                    std::process::exit(0);
+                }
+                Err(e) => {
+                    eprintln!("{} Failed to clean: {}", "❌".red(), e);
+                    std::process::exit(1);
+                }
+            }
+        } else {
+            println!("{} No data to clean", "✨".cyan());
+            std::process::exit(0);
+        }
+    }
+
     // Ensure sherpa-onnx is available (auto-download if needed)
     if !sherpa_available() {
         if !cli.quiet {

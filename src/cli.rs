@@ -83,6 +83,10 @@ pub struct Cli {
     /// Download voice: id, "list", "all", or "1,3,5"
     #[arg(short, long, value_name = "SPEC")]
     pub download: Option<String>,
+
+    /// Remove all downloaded models and engine data
+    #[arg(long)]
+    pub clean: bool,
 }
 
 impl Cli {
