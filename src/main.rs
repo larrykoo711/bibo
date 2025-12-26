@@ -140,7 +140,10 @@ async fn main() {
     // Ensure sherpa-onnx is available (auto-download if needed)
     if !sherpa_available() {
         if !cli.quiet {
-            println!("{} First run setup - downloading sherpa-onnx TTS engine...", "🚀".cyan());
+            println!(
+                "{} First run setup - downloading sherpa-onnx TTS engine...",
+                "🚀".cyan()
+            );
         }
         if let Err(e) = SherpaDownloader::download(cli.quiet).await {
             e.show();
@@ -169,7 +172,8 @@ async fn main() {
             println!("{}", "📢 Installed voices:".cyan().bold());
             for v in &voices {
                 // Find matching voice in catalog
-                let voice_info = tts::VOICE_CATALOG.iter()
+                let voice_info = tts::VOICE_CATALOG
+                    .iter()
                     .find(|voice| voice.model_dir == v)
                     .map(|voice| format!(" ({}, {})", voice.id, voice.lang))
                     .unwrap_or_default();
@@ -209,7 +213,11 @@ async fn main() {
     if !tts::VoiceCatalog::is_installed(&cli.voice) {
         if tts::VoiceCatalog::find(&cli.voice).is_some() {
             if !cli.quiet {
-                println!("{} Voice '{}' not installed, downloading...", "📥".cyan(), cli.voice);
+                println!(
+                    "{} Voice '{}' not installed, downloading...",
+                    "📥".cyan(),
+                    cli.voice
+                );
             }
             if let Err(e) = VoiceDownloader::download_voice(&cli.voice, cli.quiet).await {
                 e.show();

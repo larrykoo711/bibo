@@ -38,7 +38,9 @@ pub fn sherpa_bin_dir() -> PathBuf {
 
 /// Get sherpa TTS binary path (with playback)
 pub fn sherpa_tts_play_path() -> PathBuf {
-    sherpa_bin_dir().join("bin").join("sherpa-onnx-offline-tts-play")
+    sherpa_bin_dir()
+        .join("bin")
+        .join("sherpa-onnx-offline-tts-play")
 }
 
 /// Get sherpa TTS binary path (generate only)
@@ -82,7 +84,10 @@ pub fn find_sherpa_tts() -> Result<PathBuf> {
     }
 
     // 4. System PATH
-    if let Ok(output) = Command::new("which").arg("sherpa-onnx-offline-tts").output() {
+    if let Ok(output) = Command::new("which")
+        .arg("sherpa-onnx-offline-tts")
+        .output()
+    {
         if output.status.success() {
             let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
             if !path.is_empty() {
@@ -125,7 +130,10 @@ pub fn find_sherpa_tts_play() -> Result<PathBuf> {
     }
 
     // 4. System PATH
-    if let Ok(output) = Command::new("which").arg("sherpa-onnx-offline-tts-play").output() {
+    if let Ok(output) = Command::new("which")
+        .arg("sherpa-onnx-offline-tts-play")
+        .output()
+    {
         if output.status.success() {
             let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
             if !path.is_empty() {

@@ -3,11 +3,11 @@
 pub mod sherpa;
 
 use crate::error::{BiboError, Result};
-pub use sherpa::SherpaDownloader;
 use crate::tts::voice::{Voice, VoiceCatalog, VOICE_CATALOG};
 use colored::Colorize;
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
+pub use sherpa::SherpaDownloader;
 use std::path::PathBuf;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
@@ -150,7 +150,10 @@ impl VoiceDownloader {
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(BiboError::Other(format!("tar extraction failed: {}", stderr)));
+            return Err(BiboError::Other(format!(
+                "tar extraction failed: {}",
+                stderr
+            )));
         }
 
         Ok(())

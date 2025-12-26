@@ -62,7 +62,9 @@ impl SherpaDownloader {
             if let Ok(entries) = std::fs::read_dir(&bin_subdir) {
                 for entry in entries.filter_map(|e| e.ok()) {
                     if entry.path().is_file() {
-                        if let Ok(mut perms) = std::fs::metadata(entry.path()).map(|m| m.permissions()) {
+                        if let Ok(mut perms) =
+                            std::fs::metadata(entry.path()).map(|m| m.permissions())
+                        {
                             perms.set_mode(0o755);
                             let _ = std::fs::set_permissions(entry.path(), perms);
                         }
@@ -156,14 +158,17 @@ impl SherpaDownloader {
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(BiboError::Other(format!("tar extraction failed: {}", stderr)));
+            return Err(BiboError::Other(format!(
+                "tar extraction failed: {}",
+                stderr
+            )));
         }
 
         // Verify extraction
         let sherpa_binary = dest_dir.join("bin").join("sherpa-onnx-offline-tts");
         if !sherpa_binary.exists() {
             return Err(BiboError::Other(
-                "sherpa-onnx-offline-tts binary not found in extracted archive".to_string()
+                "sherpa-onnx-offline-tts binary not found in extracted archive".to_string(),
             ));
         }
 
