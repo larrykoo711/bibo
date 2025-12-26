@@ -511,33 +511,38 @@
       background: #000;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 20px 24px;
+      padding: 16px 20px;
       font-family: 'Space Mono', monospace;
       font-size: 1rem;
       color: var(--cyan);
       margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 24px;
+      position: relative;
+    }
+
+    .code-box code {
+      display: block;
+      padding-right: 60px;
     }
 
     .code-box .copy-btn {
-      background: none;
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      background: var(--bg-card);
       border: 1px solid var(--border);
+      border-radius: 0 8px 0 8px;
       color: var(--dim);
       padding: 6px 12px;
-      border-radius: 4px;
       font-family: 'Space Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       cursor: pointer;
       transition: all 0.2s;
-      flex-shrink: 0;
     }
 
     .code-box .copy-btn:hover {
+      background: var(--cyan);
       border-color: var(--cyan);
-      color: var(--cyan);
+      color: #000;
     }
 
     .install-alt {
@@ -936,32 +941,20 @@
         padding: 4px 8px;
       }
 
-      /* Code box: stack vertically on mobile */
+      /* Code box on mobile */
       .code-box {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-        padding: 16px;
+        padding: 14px 16px;
       }
 
       .code-box code {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         word-break: break-all;
-        text-align: center;
+        padding-right: 50px;
       }
 
       .code-box .copy-btn {
-        align-self: center;
-        width: 100%;
-        max-width: 120px;
-      }
-
-      .hero-code {
-        white-space: normal;
-      }
-
-      .hero-code code {
-        white-space: normal;
+        padding: 4px 8px;
+        font-size: 0.65rem;
       }
 
       /* Navigation */
