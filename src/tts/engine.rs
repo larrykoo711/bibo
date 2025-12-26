@@ -12,6 +12,7 @@ use std::process::Command;
 /// TTS Engine wrapper (calls sherpa-onnx binary)
 pub struct TtsEngine {
     model_dir: PathBuf,
+    onnx_file: String,
     voice_id: String,
 }
 
@@ -28,8 +29,8 @@ impl TtsEngine {
             return Err(BiboError::VoiceNotInstalled(voice_id.to_string()));
         }
 
-        // Check model.onnx exists
-        let model_path = model_dir.join("model.onnx");
+        // Check model onnx file exists
+        let model_path = voice.model_path(&models_dir);
         if !model_path.exists() {
             return Err(BiboError::ConfigError(format!(
                 "Model file missing for voice: {}",
@@ -39,6 +40,7 @@ impl TtsEngine {
 
         Ok(Self {
             model_dir,
+            onnx_file: voice.onnx_file.to_string(),
             voice_id: voice_id.to_string(),
         })
     }
@@ -52,7 +54,7 @@ impl TtsEngine {
             cmd.env(key, value);
         }
 
-        let model_path = self.model_dir.join("model.onnx");
+        let model_path = self.model_dir.join(&self.onnx_file);
         let tokens_path = self.model_dir.join("tokens.txt");
         let lexicon_path = self.model_dir.join("lexicon.txt");
         let dict_dir = self.model_dir.join("dict");

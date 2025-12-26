@@ -75,8 +75,7 @@ impl VoiceDownloader {
             .map_err(|e| BiboError::Other(format!("Failed to create models dir: {}", e)))?;
 
         // Check if already installed
-        let model_dir = voice.model_dir_path(&models_dir);
-        let model_path = model_dir.join("model.onnx");
+        let model_path = voice.model_path(&models_dir);
         if model_path.exists() {
             if !quiet {
                 println!(

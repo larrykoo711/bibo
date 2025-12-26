@@ -16,6 +16,8 @@ pub struct Voice {
     pub size_mb: u32,
     /// Model directory name in sherpa-onnx releases
     pub model_dir: &'static str,
+    /// ONNX model filename (without directory path)
+    pub onnx_file: &'static str,
     /// Download URL for the model
     pub download_url: &'static str,
 }
@@ -26,9 +28,9 @@ impl Voice {
         base.join(self.model_dir)
     }
 
-    /// Get the model.onnx path
+    /// Get the model onnx path
     pub fn model_path(&self, base: &PathBuf) -> PathBuf {
-        self.model_dir_path(base).join("model.onnx")
+        self.model_dir_path(base).join(self.onnx_file)
     }
 
     /// Get the tokens.txt path
@@ -65,6 +67,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "high",
         size_mb: 150,
         model_dir: "vits-melo-tts-zh_en",
+        onnx_file: "model.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-melo-tts-zh_en.tar.bz2",
     },
     // Chinese only
@@ -76,6 +79,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "medium",
         size_mb: 60,
         model_dir: "vits-piper-zh_CN-huayan-medium",
+        onnx_file: "zh_CN-huayan-medium.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-zh_CN-huayan-medium.tar.bz2",
     },
     Voice {
@@ -86,6 +90,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "high",
         size_mb: 100,
         model_dir: "vits-zh-aishell3",
+        onnx_file: "vits-aishell3.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-zh-aishell3.tar.bz2",
     },
     // Korean
@@ -97,6 +102,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "low",
         size_mb: 30,
         model_dir: "vits-mimic3-ko_KO-kss_low",
+        onnx_file: "ko_KO-kss_low.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-mimic3-ko_KO-kss_low.tar.bz2",
     },
     // English - US
@@ -105,10 +111,11 @@ pub static VOICE_CATALOG: &[Voice] = &[
         name: "Amy",
         lang: "en_US",
         gender: 'F',
-        quality: "medium",
-        size_mb: 60,
-        model_dir: "vits-piper-en_US-amy-medium",
-        download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-amy-medium.tar.bz2",
+        quality: "low",
+        size_mb: 30,
+        model_dir: "vits-piper-en_US-amy-low",
+        onnx_file: "en_US-amy-low.onnx",
+        download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-amy-low.tar.bz2",
     },
     Voice {
         id: "lessac",
@@ -118,6 +125,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "high",
         size_mb: 120,
         model_dir: "vits-piper-en_US-lessac-high",
+        onnx_file: "en_US-lessac-high.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-lessac-high.tar.bz2",
     },
     Voice {
@@ -128,6 +136,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "high",
         size_mb: 120,
         model_dir: "vits-piper-en_US-ryan-high",
+        onnx_file: "en_US-ryan-high.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-ryan-high.tar.bz2",
     },
     Voice {
@@ -138,6 +147,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "medium",
         size_mb: 60,
         model_dir: "vits-piper-en_US-joe-medium",
+        onnx_file: "en_US-joe-medium.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-joe-medium.tar.bz2",
     },
     Voice {
@@ -148,6 +158,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "high",
         size_mb: 80,
         model_dir: "vits-ljs",
+        onnx_file: "vits-ljs.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-ljs.tar.bz2",
     },
     // English - GB
@@ -159,6 +170,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "medium",
         size_mb: 45,
         model_dir: "vits-piper-en_GB-alan-medium",
+        onnx_file: "en_GB-alan-medium.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_GB-alan-medium.tar.bz2",
     },
     Voice {
@@ -169,6 +181,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "medium",
         size_mb: 45,
         model_dir: "vits-piper-en_GB-alba-medium",
+        onnx_file: "en_GB-alba-medium.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_GB-alba-medium.tar.bz2",
     },
     // German
@@ -180,6 +193,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "high",
         size_mb: 120,
         model_dir: "vits-piper-de_DE-thorsten-high",
+        onnx_file: "de_DE-thorsten-high.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-de_DE-thorsten-high.tar.bz2",
     },
     // French
@@ -191,6 +205,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "medium",
         size_mb: 60,
         model_dir: "vits-piper-fr_FR-siwis-medium",
+        onnx_file: "fr_FR-siwis-medium.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-fr_FR-siwis-medium.tar.bz2",
     },
     // Spanish
@@ -202,6 +217,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "medium",
         size_mb: 60,
         model_dir: "vits-piper-es_ES-davefx-medium",
+        onnx_file: "es_ES-davefx-medium.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-es_ES-davefx-medium.tar.bz2",
     },
     // Russian
@@ -213,6 +229,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "medium",
         size_mb: 60,
         model_dir: "vits-piper-ru_RU-irina-medium",
+        onnx_file: "ru_RU-irina-medium.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-ru_RU-irina-medium.tar.bz2",
     },
     Voice {
@@ -223,6 +240,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "medium",
         size_mb: 60,
         model_dir: "vits-piper-ru_RU-ruslan-medium",
+        onnx_file: "ru_RU-ruslan-medium.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-ru_RU-ruslan-medium.tar.bz2",
     },
     // Vietnamese
@@ -234,6 +252,7 @@ pub static VOICE_CATALOG: &[Voice] = &[
         quality: "low",
         size_mb: 30,
         model_dir: "vits-mimic3-vi_VN-vais1000_low",
+        onnx_file: "vi_VN-vais1000_low.onnx",
         download_url: "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-mimic3-vi_VN-vais1000_low.tar.bz2",
     },
 ];
@@ -268,23 +287,12 @@ impl VoiceCatalog {
             return vec![];
         }
 
-        // Look for model directories that contain model.onnx
-        std::fs::read_dir(&models_dir)
-            .ok()
-            .map(|entries| {
-                entries
-                    .filter_map(|e| e.ok())
-                    .filter(|e| e.path().is_dir())
-                    .filter(|e| e.path().join("model.onnx").exists())
-                    .filter_map(|e| {
-                        e.path()
-                            .file_name()
-                            .and_then(|s| s.to_str())
-                            .map(|s| s.to_string())
-                    })
-                    .collect()
-            })
-            .unwrap_or_default()
+        // Check each voice in catalog to see if it's installed
+        VOICE_CATALOG
+            .iter()
+            .filter(|voice| voice.model_path(&models_dir).exists())
+            .map(|voice| voice.model_dir.to_string())
+            .collect()
     }
 
     /// Check if voice is installed
