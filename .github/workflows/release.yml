@@ -5,31 +5,35 @@ on:
     tags:
       - 'v*'
 
-permissions:
-  contents: write
-
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-    name: Build (${{ matrix.target }})
+    name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - os: macos-latest
-            target: aarch64-apple-darwin
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            artifact: bibo-darwin-x64
+          - target: aarch64-apple-darwin
+            os: macos-latest
             artifact: bibo-darwin-arm64
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
             artifact: bibo-linux-x64
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            artifact: bibo-linux-arm64
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-action@stable
         with:
           targets: ${{ matrix.target }}
 
@@ -39,25 +43,34 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libasound2-dev
 
-      - name: Build release binary
+      - name: Install cross-compilation tools (Linux ARM64)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+
+      - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Package binary
+      - name: Package
         run: |
-          mkdir -p dist
-          cp target/${{ matrix.target }}/release/bibo dist/
-          cd dist && tar -czvf ${{ matrix.artifact }}.tar.gz bibo
+          cd target/${{ matrix.target }}/release
+          tar -czvf ../../../${{ matrix.artifact }}.tar.gz bibo
+          cd ../../..
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: dist/${{ matrix.artifact }}.tar.gz
+          path: ${{ matrix.artifact }}.tar.gz
 
   release:
     name: Create Release
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -66,23 +79,15 @@ jobs:
         with:
           path: artifacts
 
+      - name: List artifacts
+        run: find artifacts -type f
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: artifacts/**/*.tar.gz
           generate_release_notes: true
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  update-homebrew:
-    name: Update Homebrew Formula
-    needs: release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Homebrew tap update
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.TAP_GITHUB_TOKEN }}
-          repository: larrykoo711/homebrew-tap
-          event-type: update-formula
-          client-payload: '{"version": "${{ github.ref_name }}"}'

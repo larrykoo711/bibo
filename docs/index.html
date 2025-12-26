@@ -1333,9 +1333,11 @@
           <div class="example-content">
             <div class="example-code">
               <span class="cmd">bibo "Hello world. 你好世界。" -v melo</span>
+              <button class="play-sm" onclick="playAudio('ex-melo', this)">▶</button>
             </div>
             <p class="example-desc" data-lang="en">🌏 Chinese + English bilingual with MeloTTS (default voice)</p>
             <p class="example-desc" data-lang="zh">🌏 MeloTTS 中英双语（默认语音）</p>
+            <audio id="ex-melo" src="audio/example-melo.wav" preload="none"></audio>
           </div>
         </li>
         <li>
@@ -1393,15 +1395,21 @@
     <section class="voices">
       <h2>// Voice Gallery</h2>
       <div class="voice-grid">
+        <div class="voice-card has-audio" onclick="playAudio('ex-melo', this.querySelector('.voice-play'))">
+          <div class="voice-name">melo</div>
+          <div class="voice-lang">中英双语 • ♀</div>
+          <button class="voice-play">▶</button>
+        </div>
         <div class="voice-card has-audio" onclick="playAudio('ex-amy', this.querySelector('.voice-play'))">
           <div class="voice-name">amy</div>
           <div class="voice-lang">English US • ♀</div>
           <button class="voice-play">▶</button>
         </div>
-        <div class="voice-card">
+        <div class="voice-card has-audio" onclick="playAudio('ex-ryan', this.querySelector('.voice-play'))">
           <div class="voice-name">ryan</div>
           <div class="voice-lang">English US • ♂</div>
-          <button class="voice-play" disabled>▶</button>
+          <button class="voice-play">▶</button>
+          <audio id="ex-ryan" src="audio/example-ryan.wav" preload="none"></audio>
         </div>
         <div class="voice-card has-audio" onclick="playAudio('ex-huayan', this.querySelector('.voice-play'))">
           <div class="voice-name">huayan</div>
